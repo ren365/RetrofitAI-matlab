@@ -34,7 +34,7 @@ class DynamicsAckermannZModified():
 
 	def convert_x_to_z(self,x):
 		v_sign = 1.0
-		if x[3] < 0:
+		if x[3,:] < 0:
 			v_sign = -1
 		return np.stack((x[0,:],x[1,:],x[3,:]*np.cos(x[2,:]),x[3,:]*np.sin(x[2,:]),np.array([v_sign])),axis=0)
 
