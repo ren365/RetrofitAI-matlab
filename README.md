@@ -1,2 +1,27 @@
 # RetrofitAI-matlab
-matlab version of safe control with supervised learning
+MATLAB version of safe control with supervised learning
+
+requirement: OSQP (MATLAB version)
+
+```matlab
+install_osqp
+```
+
+The original repo: https://github.com/ren365/RetrofitAI
+
+The structure of the codes.
+
+| Name                       | Type   | Decryption                                         | Status        |
+| -------------------------- | ------ | -------------------------------------------------- | ------------- |
+| original python            | folder | original python files                              | done          |
+| osqp                       | folder | installed lib for QP solver                        | done          |
+| test codes                 | folder | test whether matlab & python codes behave the same | under going   |
+| DynamicsAckermannZModified | .m     | dynamics                                           | tested        |
+| einsum                     | .m     | helper function for numpy.einsum                   | tested        |
+| LyapunovAckermannZ         | .m     |                                                    | untested      |
+| install_osqp               | .m     | automatically install the osqp on matlab           | done          |
+| QPSolver                   | .m     | main file for CBF                                  | waiting cbf.m |
+| test_adaptive_clbf         | .m     | main file to run                                   | undergoing    |
+|                            |        |                                                    |               |
+
+
