@@ -9,7 +9,7 @@ install_osqp
 
 The original repo: https://github.com/ren365/RetrofitAI
 
-The structure of the codes.
+The structure of the codes. The file name remains almost the same as original python files.
 
 | Name                       | Type   | Decryption                                         | Status              |
 | -------------------------- | ------ | -------------------------------------------------- | ------------------- |
@@ -20,7 +20,7 @@ The structure of the codes.
 | einsum                     | .m     | helper function for numpy.einsum                   | tested              |
 | LyapunovAckermannZ         | .m     |                                                    | untested            |
 | install_osqp               | .m     | automatically install the osqp on matlab           | done                |
-| QPSolver                   | .m     | main file for CBF                                  | done, waiting cbf.m |
+| QPSolver                   | .m     | CBF                                                | done, waiting cbf.m |
 | test_adaptive_clbf         | .m     | main file to run                                   | under implementing  |
 | vanilla_nn                 | .m     | Neuronetwork                                       | unimplemented       |
 | adaptive_clbf              | .m     | combine NN and CBF                                 | unimplemented       |
