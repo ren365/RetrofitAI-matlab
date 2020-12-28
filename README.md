@@ -11,17 +11,20 @@ The original repo: https://github.com/ren365/RetrofitAI
 
 The structure of the codes.
 
-| Name                       | Type   | Decryption                                         | Status        |
-| -------------------------- | ------ | -------------------------------------------------- | ------------- |
-| original python            | folder | original python files                              | done          |
-| osqp                       | folder | installed lib for QP solver                        | done          |
-| test codes                 | folder | test whether matlab & python codes behave the same | under going   |
-| DynamicsAckermannZModified | .m     | dynamics                                           | tested        |
-| einsum                     | .m     | helper function for numpy.einsum                   | tested        |
-| LyapunovAckermannZ         | .m     |                                                    | untested      |
-| install_osqp               | .m     | automatically install the osqp on matlab           | done          |
-| QPSolver                   | .m     | main file for CBF                                  | waiting cbf.m |
-| test_adaptive_clbf         | .m     | main file to run                                   | undergoing    |
-|                            |        |                                                    |               |
+| Name                       | Type   | Decryption                                         | Status             |
+| -------------------------- | ------ | -------------------------------------------------- | ------------------ |
+| original python            | folder | original python files                              | done               |
+| osqp                       | folder | installed lib for QP solver                        | done               |
+| test codes                 | folder | test whether matlab & python codes behave the same | under implementing |
+| DynamicsAckermannZModified | .m     | dynamics                                           | tested             |
+| einsum                     | .m     | helper function for numpy.einsum                   | tested             |
+| LyapunovAckermannZ         | .m     |                                                    | untested           |
+| install_osqp               | .m     | automatically install the osqp on matlab           | done               |
+| QPSolver                   | .m     | main file for CBF                                  | waiting cbf.m      |
+| test_adaptive_clbf         | .m     | main file to run                                   | under implementing |
+| vanilla_nn                 | .m     | Neuronetwork                                       | unimplemented      |
+| adaptive_clbf              | .m     | combine NN and CBF                                 | unimplemented      |
+| cbf                        | .m     | update the barriers position                       | unimplemented      |
+|                            |        |                                                    |                    |
 
 
