@@ -18,7 +18,7 @@ classdef BarrierAckermannVelocityZ
 			if obj.bound_from_above
 				sgn = -1.0;
 			end
-			hx = sgn * (sqrt(z(3)^2 + z(4)^2) * z(5) - self.v_lim);
+			hx = sgn * (sqrt(z(3)^2 + z(4)^2) * z(5) - obj.v_lim);
 		end
 		
 		function dh = dh(obj,z)
@@ -32,7 +32,7 @@ classdef BarrierAckermannVelocityZ
 			z4 = z(4,:);
 			z5 = z(5,:);
 			v = sqrt(z3^2 + z4^2) + 1.0e-6;
-			dh = [0; 0; (z3*z5)/v; (z4*z5)/v)] * sgn;
+			dh = [0; 0; (z3*z5)/v; (z4*z5)/v] * sgn;
 			
 		end
 		
@@ -43,7 +43,7 @@ classdef BarrierAckermannVelocityZ
 			end
 			dh = obj.dh(x);
 			dB = -1.0/(hx*hx)*dh';
-			d2B= 2.0/(hx*hx*hx)*(dh(3:length(dh))'*dh(3:length(dh)));		
+			d2B= 2.0/(hx*hx*hx)*(dh(3:length(dh))*dh(3:length(dh))');		
 		end
 
 	end
