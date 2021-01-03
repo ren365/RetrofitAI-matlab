@@ -24,7 +24,8 @@ The structure of the codes. The file name remains almost the same as original py
 | test_adaptive_clbf         | .m     | main file to run                                   | under implementing  |
 | vanilla_nn                 | .m     | Neuronetwork                                       | unimplemented       |
 | adaptive_clbf              | .m     | combine NN and CBF                                 | unimplemented       |
-| cbf                        | .m     | update the barriers position                       | unimplemented       |
+| BarrierAckermannPointZ     | .m     | (cbf.py) update the barriers position              | untested            |
+| BarrierAckermannVelocityZ  | .m     | (cbf.py) update the barriers position              | untested            |
 |                            |        |                                                    |                     |
 
 
