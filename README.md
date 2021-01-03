@@ -18,7 +18,7 @@ The structure of the codes. The file name remains almost the same as original py
 | test codes                 | folder | test whether matlab & python codes behave the same | under implementing  |
 | DynamicsAckermannZModified | .m     | dynamics                                           | tested              |
 | einsum                     | .m     | helper function for numpy.einsum                   | tested              |
-| LyapunovAckermannZ         | .m     |                                                    | untested            |
+| LyapunovAckermannZ         | .m     |                                                    | tested              |
 | install_osqp               | .m     | automatically install the osqp on matlab           | done                |
 | QPSolver                   | .m     | CBF                                                | done, waiting cbf.m |
 | test_adaptive_clbf         | .m     | main file to run                                   | under implementing  |
