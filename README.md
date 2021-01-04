@@ -21,8 +21,8 @@ The structure of the codes. The file name remains almost the same as original py
 | LyapunovAckermannZ                             | .m     |                                                    | tested             |
 | install_osqp                                   | .m     | automatically install the osqp on matlab           | done               |
 | QPSolver                                       | .m     | CBF                                                | tested             |
-| test_adaptive_clbf                             | .m     | main file to run                                   | under implementing |
-| vanilla_nn                                     | .m     | Neuronetwork                                       | unimplemented      |
+| test_adaptive_clbf                             | .m     | main file to run                                   | skip for now       |
+| vanilla_nn                                     | .m     | Neuronetwork                                       | skip for now       |
 | adaptive_clbf                                  | .m     | combine NN and CBF                                 | unimplemented      |
 | BarrierAckermannPointZ                         | .m     | (cbf.py) update the barriers position              | tested             |
 | BarrierAckermannVelocityZ                      | .m     | (cbf.py) update the barriers position              | tested             |
