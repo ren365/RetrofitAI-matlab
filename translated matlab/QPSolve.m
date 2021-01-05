@@ -28,6 +28,7 @@ classdef QPSolve
 		prob
         res
         max_error
+		result
 	end
 	methods (Access = public)
 		function obj = QPSolve(dyn,cbf_list,clf,u_lim,u_cost,u_prev_cost,p1_cost,p2_cost,verbose)
@@ -60,6 +61,7 @@ classdef QPSolve
 			obj.prob = NaN;
 			obj.res = NaN;
 			obj.max_error = 1.0;
+			obj.result = NaN;
 		end
 	
 		function obj = update_ricatti(obj,A)
@@ -170,7 +172,7 @@ classdef QPSolve
 				% print('G_all:',obj.G_csc)
 				% print('h_all:',obj.h)
 
-			result = obj.mu_qp_prev;
+			obj.result = obj.mu_qp_prev;
 		end
 	end
 end	
