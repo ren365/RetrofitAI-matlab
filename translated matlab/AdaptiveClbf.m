@@ -199,7 +199,7 @@ classdef AdaptiveClbf
 		end
 		
 		% untested
-		function [obj,controls] = get_control(obj,z,z_ref,z_ref_dot,dt,obs,use_model,add_data,use_qp)
+		function obj = get_control(obj,z,z_ref,z_ref_dot,dt,obs,use_model,add_data,use_qp)
 			% z,z_ref,z_ref_dot,dt,obs=None,train=False,use_model=False,add_data=True,check_model=True,use_qp=True
 			train = false;
 			check_model = true;
@@ -222,7 +222,7 @@ classdef AdaptiveClbf
 
 			obj.z_ref_dot = z_ref_dot;
 			mu_rm = obj.z_ref_dot(3:end-1);
-
+			
 			mu_model = obj.dyn.g(obj.z_prev) * obj.u_prev + obj.dyn.f(obj.z_prev);
 			mu_model(mu_model>obj.max_error)=obj.max_error;
 			mu_model(mu_model<-obj.max_error)=-obj.max_error;
@@ -289,14 +289,17 @@ classdef AdaptiveClbf
 			else
 				sigDelta = ones(obj.xdim/2,1);
 			end
-			
+					
 			mu_d = mu_rm + mu_pd - mu_ad;
+			
 			obj.mu_qp = zeros(obj.xdim/2,1);
 			if use_qp
 				obj.qpsolve = obj.qpsolve.solve(obj.z,obj.z_ref,mu_d,sigDelta);
                 obj.mu_qp = obj.qpsolve.result;
 			end
+		
 			obj.mu_new = mu_d + obj.mu_qp;
+			
 			obj.u_new = inv(obj.dyn.g(obj.z)) * (obj.mu_new-obj.dyn.f(obj.z));
 
 			u_new_unsaturated = obj.u_new;
@@ -305,13 +308,13 @@ classdef AdaptiveClbf
 
 			obj.mu_prev = obj.mu_new;
 			obj.u_prev_prev = obj.u_prev;
-			obj.u_prev = obj.u_new;
+			obj.u_prev = obj.u_new';
 			obj.obs_prev = obj.obs;
 			obj.z_prev = obj.z;
 
 			obj.controls = zeros(obj.udim,1);
 			obj.controls(1) = atan(obj.u_new(1) * obj.vehicle_length);
-			obj.controls(2) = obj.u_new(1);
+			obj.controls(2) = obj.u_new(2);
 			
 			% return controls
 		end	

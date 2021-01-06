@@ -92,7 +92,7 @@ classdef QPSolve
 			G_dyn = [[eTPG,1,0]]; %#append 1 for clf < d
 			Gsig = obj.G*sigDelta;
 			GssG = Gsig*Gsig';
-			obj.trGssGP = trace(GssG*obj.P)
+			obj.trGssGP = trace(GssG*obj.P);
 			h_dyn = -1 * ( -0.5*(e'*(Q*e)) ...
 						+ 0.5*(e'*(obj.P*e)) / obj.clf.epsilon ...
 						+ 0.5*obj.trGssGP);
@@ -137,10 +137,12 @@ classdef QPSolve
 
 			% #Solve QP
 			obj.prob = osqp;
-			exception_called = false;
+			settings = obj.prob.default_settings();
+			settings.verbose = false;
+
 			mu_bar = double(zeros(obj.xdim+1));
 			% obj.prob.setup(P=obj.Q, q=obj.p, A=obj.G_csc, l=l, u=obj.h, verbose=obj.verbose)
-			obj.prob.setup(obj.Q, obj.p, obj.G_csc, l, obj.h);
+			obj.prob.setup(obj.Q, obj.p, obj.G_csc, l, obj.h, settings);
 			obj.res = obj.prob.solve();
 			mu_bar = obj.res.x;
 			if any(isnan(mu_bar))
