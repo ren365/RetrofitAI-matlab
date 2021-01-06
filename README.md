@@ -25,7 +25,7 @@ The structure of the codes. The file name remains almost the same as original py
 | test_adaptive_clbf                             | .m     | main file to run                                   | untested, qp pass |
 | adaptive_clbf                                  | .m     | combine NN and CBF                                 | untested, qp pass |
 | ModelGP                                        | .m     | gaussian instead of NN                             | untested          |
-| ScaledGP                                       | .m     | gaussian instead of NN                             | undergoing        |
+| ScaledGP                                       | .m     | gaussian instead of NN                             | untested          |
 |                                                |        |                                                    |                   |
 
 

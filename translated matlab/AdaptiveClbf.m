@@ -63,7 +63,7 @@ classdef AdaptiveClbf
 			obj.model_trained = false;
 			%%%% USE ROSE - UNTRASLATE
 				% from model_service import ModelVanillaService
-				% obj.model = ModelVanillaService(obj.xdim,obj.odim,use_obs=True,use_service=False)
+				obj.model = ModelGP(obj.xdim,obj.udim,obj.odim,true);
 			%%%% USE ROSE - UNTRASLATE - END
 			obj.clf = LyapunovAckermannZ(10.0,1.0,1.0,1.0);
 			obj.qpsolve = QPSolve(obj.dyn,[],obj.clf,obj.u_lim,0.0,1.0,1.0e8,1.0e8,false);
@@ -228,15 +228,15 @@ classdef AdaptiveClbf
 			mu_model(mu_model<-obj.max_error)=-obj.max_error;
 			
 			%%%% USE ROSE - UNTRASLATE
-				% if add_data
-					% req = AddData2Model()
-					% req.x_next = obj.z.flatten()
-					% req.x = obj.z_prev.flatten()
-					% req.mu_model = mu_model.flatten()
-					% req.obs = obj.obs_prev.flatten()
-					% req.dt = dt
-					% obj.model.add_data(req)
-				% end
+				if add_data
+					req = {};
+					req.x_next = obj.z;
+					req.x = obj.z_prev;
+					req.mu_model = mu_model;
+					req.obs = obj.obs_prev;
+					req.dt = dt;
+					obj.model = obj.model.add_data(req);
+				end
 			%%%% USE ROSE - UNTRASLATE - END
 			
 			obj.z_dot = (obj.z(3:end-1,:)-obj.z_prev(3:end-1,:))/dt - mu_model;
@@ -247,11 +247,11 @@ classdef AdaptiveClbf
 				predict_service_success = False;
 				result = NaN;
 				%%%% USE ROSE - UNTRASLATE
-					% req = PredictModel()
-					% req.x = obj.z_prev.flatten()
-					% req.obs = obj.obs_prev.flatten()
-					% result = obj.model.predict(req)
-					% predict_service_success = True
+					req = {};
+					req.x = obj.z_prev;
+					req.obs = obj.obs_prev;
+					result = obj.model.predict(req);
+					predict_service_success = true;
 				%%%% USE ROSE - UNTRASLATE - END
 
 				if predict_service_success
@@ -265,11 +265,11 @@ classdef AdaptiveClbf
 				predict_service_success = false;
 				result = NaN;
 				%%%% USE ROSE - UNTRASLATE
-					% req = PredictModel()
-					% req.x = obj.z.flatten()
-					% req.obs = obj.obs.flatten()
-					% result = obj.model.predict(req)
-					% predict_service_success = True
+					req = {};
+					req.x = obj.z;
+					req.obs = obj.obs;
+					result = obj.model.predict(req);
+					predict_service_success = true;
 				%%%% USE ROSE - UNTRASLATE - END
 
 

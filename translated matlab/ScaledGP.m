@@ -1,7 +1,13 @@
 classdef  ScaledGP
 	% untest
 	properties
-		
+		xdim
+		ydim
+		ystd
+		ymean
+		xstd
+		xmean
+		m
 	end
 	methods (Access = public)
 		function obj = ScaledGP(xdim,ydim)
@@ -16,46 +22,72 @@ classdef  ScaledGP
 		
 		function obj = optimize(obj,x,y)
 
+			[xmean,xstd] = obj.update_xscale(x);
+			[ymean,ystd] = obj.update_yscale(y);
+			
+			x = obj.scalex(x,xmean,xstd);
+			y = obj.scaley(y,ymean,ystd);
+			
+			obj.m = fitrgp(x,y,'Optimizer','lbfgs');
+			
+			obj.xmean = xmean;
+			obj.xstd = xstd;
+			obj.ymean = ymean;
+			obj.ystd = ystd;
+			
+		end
+				
+		function [mean,var] = predict(obj,x)
+			x = obj.scalex(x,obj.xmean,obj.xstd);
+			[mean,var] = predict(obj.m,x);
+			mean = obj.unscaley(mean,obj.ymean,obj.ystd);
+			var = var * obj.ystd;
+			% if mean.size == 1:
+				% mean = mean[0,0]
+				% var = var[0,0]
+		end
+
+		function [xmean,xstd] = update_xscale(obj,x)
+			xmean = mean(x)
+			xstd = std(x);
+		end
+
+		function [ymean,ystd] = update_yscale(obj,y)
+			ymean = mean(y);
+			ystd = std(y);
 		end
 		
-		def optimize(obj,x,y,update_scaling=True, num_inducing=50):
+		function result = scalex(obj,x,xmean,xstd)
+			if any((xstd == 0))
+				result = x-xmean;
+			else
+				result = (x - xmean) / xstd;
+			end
+		end
 		
-		xmean = obj.xmean
-		xstd = obj.xstd
-		ymean = obj.ymean
-		ystd = obj.ystd
-		if update_scaling:
-			xmean,xstd = obj.update_xscale(x)
-			ymean,ystd = obj.update_yscale(y)
-
-		x = obj.scalex(x,xmean,xstd)
-		y = obj.scaley(y,ymean,ystd)
-		updated_model = GPy.models.GPRegression(x,y)
-		# obj.m = GPy.models.SparseGPRegression(x,y,num_inducing=num_inducing)
-		updated_model.optimize('bfgs')
-		obj.m = updated_model
-
-		obj.xmean = xmean
-		obj.xstd = xstd
-		obj.ymean = ymean
-		obj.ystd = ystd
-				
-		function result = V(obj,z,z_d)
+		function result = scaley(obj,y,ymean,ystd)
+			if any((ystd == 0))
+				result = y-ymean;
+			else
+				result = (y - ymean) / ystd;
+			end
+		end
 		
+		function result = unscalex(obj,x,xmean,xstd)
+			if any((xstd == 0))
+				result = x + xmean;
+			else
+				result = x * xstd + xmean;
+			end
+		end
+		
+		function result = unscaley(obj,y,ymean,ystd)
+			if any((ystd == 0))
+				result = y + ymean;
+			else
+				result = y * ystd + ymean;
+			end
 		end
 
 	end
 end
-
-
-	
-
-	def predict(obj,x):
-		x = obj.scalex(x,obj.xmean,obj.xstd)
-		mean,var = obj.m.predict_noiseless(x)
-		mean = obj.unscaley(mean,obj.ymean,obj.ystd)
-		var = var * obj.ystd
-		if mean.size == 1:
-			mean = mean[0,0]
-			var = var[0,0]
-		return mean,var

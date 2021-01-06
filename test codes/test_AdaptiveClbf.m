@@ -152,11 +152,12 @@ for i = 1:N-2
 	% prediction_var(:,i:i+1) = np.clip(adaptive_clbf.predict_var,0,params.qp_max_var);
 	% trGssGP(i) = adaptive_clbf.qpsolve.trGssGP;
 
-	% adaptive_clbf_ad = adaptive_clbf_ad.get_control(z_ad(:,i),z_d(:,i+1),z_d_dot,dt,[],true,add_data,false);
-	% u_ad(:,i+1) = adaptive_clbf_ad.controls;
-	% if (i - start_training - 1) % train_interval == 0 and i > start_training:;
-		% adaptive_clbf_ad.model.train();
-		% adaptive_clbf_ad.model_trained = true;
+	adaptive_clbf_ad = adaptive_clbf_ad.get_control(z_ad(:,i),z_d(:,i+1),z_d_dot,dt,[],true,add_data,false);
+	u_ad(:,i+1) = adaptive_clbf_ad.controls;
+	if (i - start_training - 1) % train_interval == 0 and i > start_training:;
+		adaptive_clbf_ad.model = adaptive_clbf_ad.model.train();
+		adaptive_clbf_ad.model_trained = true;
+	end
 	% prediction_error_ad(i) = adaptive_clbf_ad.predict_error;
 	% prediction_error_true_ad(i) = adaptive_clbf_ad.true_predict_error;
 	% prediction_var_ad(:,i:i+1) = np.clip(adaptive_clbf_ad.predict_var,0,params.qp_max_var);
@@ -169,22 +170,22 @@ for i = 1:N-2
 	% u_pd(:,i+1) = adaptive_clbf_pd.controls;
 
 	% c = u(:,i+1);
-	% c_ad = u_ad(:,i+1);
+	c_ad = u_ad(:,i+1);
 	c_qp = u_qp(:,i+1);
 	% c_pd = u_pd(:,i+1);
 
 	% c(1) = tan(c(1))/params.vehicle_length;
-	% c_ad(1) = tan(c_ad(1))/params.vehicle_length;
+	c_ad(1) = tan(c_ad(1))/params.vehicle_length;
 	c_qp(1) = tan(c_qp(1))/params.vehicle_length;
 	% c_pd(1) = tan(c_pd(1))/params.vehicle_length;
 
 	% z(:,i+1) = true_dyn.step(z(:,i),c,dt);
-	% z_ad(:,i+1) = true_dyn.step(z_ad(:,i),c_ad,dt);
+	z_ad(:,i+1) = true_dyn.step(z_ad(:,i),c_ad,dt);
 	z_qp(:,i+1) = true_dyn.step(z_qp(:,i),c_qp,dt);
 	% z_pd(:,i+1) = true_dyn.step(z_pd(:,i),c_pd,dt);
 
 	% x(:,i+1) = true_dyn.convert_z_to_x(z(:,i+1));
-	% x_ad(:,i+1) = true_dyn.convert_z_to_x(z_ad(:,i+1));
+	x_ad(:,i+1) = true_dyn.convert_z_to_x(z_ad(:,i+1));
 	x_qp(:,i+1) = true_dyn.convert_z_to_x(z_qp(:,i+1));
 	% x_pd(:,i+1) = true_dyn.convert_z_to_x(z_pd(:,i+1));
 
@@ -195,9 +196,9 @@ end
 figure
 
 % plot(x_d(0,:),x_d(1,:),'k-',label='ref');
-% plot(x_ad(0,:),x_ad(1,:),'m--',alpha=0.9,label='ad');
-plot(x_qp(1,:),x_qp(2,:),'b-');
+plot(x_ad(1,:),x_ad(2,:),'m--');
 hold on
+plot(x_qp(1,:),x_qp(2,:),'b-');
 % plot(x_pd(0,:),x_pd(1,:),'y:',alpha=0.9,label='pd');
 % plot(x(0,:),x(1,:),'g-',alpha=0.9,label='balsa',linewidth=3.0);
 % legend(bbox_to_anchor=(0,1.02,1,0.2), loc="lower center", ncol=5);
@@ -205,3 +206,4 @@ radius = ones(length(barrier_x),1)*params.barrier_radius;
 viscircles([barrier_x',barrier_y'], radius);
 xlabel('X Position');
 ylabel('Y Position');
+ze

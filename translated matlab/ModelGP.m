@@ -13,15 +13,15 @@ classdef  ModelGP
 		model_trained
 	end
 	methods (Access = public)
-		function obj = ModelGP(xdim,udim,odim,use_obs=false)
+		function obj = ModelGP(xdim,udim,odim,use_obs)
 			% # note:  use use_obs and observations with caution.  model may overfit to this input.
-			obj.xdim=xdim
-			obj.udim=udim
-			obj.odim=odim
-			obj.use_obs = use_obs
+			obj.xdim=xdim;%4
+			obj.udim=udim;
+			obj.odim=odim;%2
+			obj.use_obs = use_obs;
 			model_xdim=obj.xdim/2;
-			if obj.use_obs:
-				 model_xdim += obj.odim;
+			if obj.use_obs
+				 model_xdim = model_xdim + obj.odim;
 			end
 			model_ydim=obj.xdim/2;
 			obj.m = ScaledGP(model_xdim,model_ydim);
@@ -45,8 +45,9 @@ classdef  ModelGP
 			x_body = obj.rotate(x(3:4,:),theta);
 			if obj.use_obs
 				z = [x_body,obs(2:end,:)]';
-			else:
+			else
 				z = [x_body]';
+			end
 			result = z;
 		end
 		
@@ -69,7 +70,7 @@ classdef  ModelGP
 			obj.y = [obj.y,ynew_rotated'];
 			obj.z = [obj.z,Znew];
 			% throw away old samples if too many samples collected.
-			if length(obj.y) > obj.N_data:
+			if length(obj.y) > obj.N_data
 				obj.y = obj.y(end-obj.N_data:end,:);
 				obj.z = obj.z(end-obj.N_data:end,:);
 			end
@@ -79,12 +80,12 @@ classdef  ModelGP
 		
 		function obj = train(obj)
 			if length(obj.z) > 0
-				obj.m.optimize(obj.z,obj.y);
+				obj.m = obj.m.optimize(obj.z,obj.y);
 				obj.model_trained = true;
 			end
 		end
 		
-		function result = V(obj,req)
+		function result = predict(obj,req)
 			% input
 			x = req.x;
 			obs = req.obs;
