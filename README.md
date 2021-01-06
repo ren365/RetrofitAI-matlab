@@ -23,8 +23,9 @@ The structure of the codes. The file name remains almost the same as original py
 | QPSolver                                       | .m     | CBF                                                | tested            |
 | BarrierAckermannPointZ                         | .m     | (cbf.py) update the barriers position              | tested            |
 | test_adaptive_clbf                             | .m     | main file to run                                   | untested, qp pass |
-| gaussian                                       | .m     | gaussian instead of NN                             | undergoing        |
 | adaptive_clbf                                  | .m     | combine NN and CBF                                 | untested, qp pass |
+| ModelGP                                        | .m     | gaussian instead of NN                             | untested          |
+| ScaledGP                                       | .m     | gaussian instead of NN                             | undergoing        |
 |                                                |        |                                                    |                   |
 
 
