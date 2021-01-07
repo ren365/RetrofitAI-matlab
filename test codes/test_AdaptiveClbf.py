@@ -5,7 +5,7 @@ import numpy as np
 import copy
 from progress.bar import Bar
 import time
-import GPy
+# import GPy
 
 class Lyapunov():
 	def __init__(self,dim,epsilon=1.0):
@@ -1163,11 +1163,11 @@ class ScaledGP:
 	def __init__(self,xdim=1,ydim=1):
 		self.xdim=xdim
 		self.ydim=ydim
-		self.ystd = np.ones(ydim)
-		self.ymean = np.zeros(ydim)
-		self.xstd = np.ones(xdim)
-		self.xmean = np.zeros(xdim)
-		self.m = GPy.models.GPRegression(np.zeros((1,xdim)),np.zeros((1,ydim)))
+		self.ystd = np.ones(int(ydim))
+		self.ymean = np.zeros(int(ydim))
+		self.xstd = np.ones(int(xdim))
+		self.xmean = np.zeros(int(xdim))
+		self.m = None
 
 	def optimize(self,x,y,update_scaling=True, num_inducing=50):
 		assert(x.shape[1] == self.xdim and y.shape[1] == self.ydim)
@@ -1184,7 +1184,7 @@ class ScaledGP:
 		x = self.scalex(x,xmean,xstd)
 		y = self.scaley(y,ymean,ystd)
 		updated_model = GPy.models.GPRegression(x,y)
-		# self.m = GPy.models.SparseGPRegression(x,y,num_inducing=num_inducing)
+		self.m = GPy.models.SparseGPRegression(x,y,num_inducing=num_inducing)
 		updated_model.optimize('bfgs')
 		self.m = updated_model
 
@@ -1240,7 +1240,6 @@ class ScaledGP:
 			return y * ystd + ymean
 
 class ModelService(object):
-	_train_result = controller_adaptiveclbf.msg.TrainModelResult()
 
 	def __init__(self,xdim,odim,use_obs, use_service = True):
 
@@ -1265,10 +1264,10 @@ class ModelGPService(ModelService):
 	def __init__(self,xdim,odim,use_obs=False,use_service=True):
 		ModelService.__init__(self,xdim,odim,use_obs,use_service)
 		# note:  use use_obs and observations with caution.  model may overfit to this input.
-		model_xdim=self.xdim/2
+		model_xdim=int(self.xdim/2)
 		if self.use_obs:
 			 model_xdim += self.odim
-		model_ydim=self.xdim/2
+		model_ydim=int(self.xdim/2)
 
 		self.m = ScaledGP(xdim=model_xdim,ydim=model_ydim)
 		self.y = np.zeros((0,model_ydim))
@@ -1484,13 +1483,7 @@ class AdaptiveClbf(object):
 				except:
 					print("add data service unavailable")
 			else:
-				req = AddData2Model()
-				req.x_next = self.z.flatten()
-				req.x = self.z_prev.flatten()
-				req.mu_model = mu_model.flatten()
-				req.obs = self.obs_prev.flatten()
-				req.dt = dt
-				self.model.add_data(req)
+				self.model.add_data(self.z,self.z_prev,mu_model,self.obs_prev,dt)
 
 		self.z_dot = (self.z[2:-1,:]-self.z_prev[2:-1,:])/dt - mu_model
 
@@ -1767,7 +1760,7 @@ for i in range(N-2):
 	# if (i - start_training -1 ) % train_interval == 0 and i > start_training:
 			# adaptive_clbf.model.train()
 			# adaptive_clbf.model_trained = True
-			
+
 	u_ad[:,i+1] = adaptive_clbf_ad.get_control(z_ad[:,i:i+1],z_d[:,i+1:i+2],z_d_dot,dt=dt,obs=np.concatenate([x_ad[2,i:i+1],u_ad[:,i]]),use_model=True,add_data=add_data,use_qp=False)
 	if (i - start_training - 1) % train_interval == 0 and i > start_training:
 		adaptive_clbf_ad.model.train()
@@ -1775,7 +1768,7 @@ for i in range(N-2):
 		
 	# print(z_qp[:,i:i+1],z_d[:,i+1:i+2],z_d_dot)
 	u_qp[:,i+1] = adaptive_clbf_qp.get_control(z_qp[:,i:i+1],z_d[:,i+1:i+2],z_d_dot,dt=dt,obs=[],use_model=False,add_data=False,use_qp=True)
-	print(u_qp[:,i+1])
+	# print(u_qp[:,i+1])
 	# u_pd[:,i+1] = adaptive_clbf_pd.get_control(z_pd[:,i:i+1],z_d[:,i+1:i+2],z_d_dot,dt=dt,obs=[],use_model=False,add_data=False,use_qp=False)
 
 	# dt = np.random.uniform(0.05,0.15)

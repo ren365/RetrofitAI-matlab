@@ -137,7 +137,7 @@ for i = 1:N-2
 		z_d_dot = (z_d(:,i+2) - z_d(:,i+1))/dt;
 	end
 
-	if i == 0
+	if i == 1
 		add_data = false;
 	else
 		add_data = true;
@@ -151,10 +151,9 @@ for i = 1:N-2
 	% prediction_error_true(i) = adaptive_clbf.true_predict_error;
 	% prediction_var(:,i:i+1) = np.clip(adaptive_clbf.predict_var,0,params.qp_max_var);
 	% trGssGP(i) = adaptive_clbf.qpsolve.trGssGP;
-
-	adaptive_clbf_ad = adaptive_clbf_ad.get_control(z_ad(:,i),z_d(:,i+1),z_d_dot,dt,[],true,add_data,false);
+	adaptive_clbf_ad = adaptive_clbf_ad.get_control(z_ad(:,i),z_d(:,i+1),z_d_dot,dt,[x_ad(3,i),u_ad(:,i)'],true,add_data,false);
 	u_ad(:,i+1) = adaptive_clbf_ad.controls;
-	if (i - start_training - 1) % train_interval == 0 and i > start_training:;
+	if mod((i - start_training - 1) , train_interval) == 0 && i > start_training
 		adaptive_clbf_ad.model = adaptive_clbf_ad.model.train();
 		adaptive_clbf_ad.model_trained = true;
 	end
@@ -162,7 +161,7 @@ for i = 1:N-2
 	% prediction_error_true_ad(i) = adaptive_clbf_ad.true_predict_error;
 	% prediction_var_ad(:,i:i+1) = np.clip(adaptive_clbf_ad.predict_var,0,params.qp_max_var);
 	
-	adaptive_clbf_qp = adaptive_clbf_qp.get_control(z_qp(:,i),z_d(:,i+1),z_d_dot,dt,[],true,add_data,true);
+	adaptive_clbf_qp = adaptive_clbf_qp.get_control(z_qp(:,i),z_d(:,i+1),z_d_dot,dt,[],true,false,true);
 	u_qp(:,i+1) = adaptive_clbf_qp.controls;
 	u_qp(:,i+1)
 	
@@ -195,9 +194,9 @@ end
 
 figure
 
-% plot(x_d(0,:),x_d(1,:),'k-',label='ref');
-plot(x_ad(1,:),x_ad(2,:),'m--');
+plot(x_d(1,:),x_d(2,:),'k-');
 hold on
+plot(x_ad(1,:),x_ad(2,:),'m--');
 plot(x_qp(1,:),x_qp(2,:),'b-');
 % plot(x_pd(0,:),x_pd(1,:),'y:',alpha=0.9,label='pd');
 % plot(x(0,:),x(1,:),'g-',alpha=0.9,label='balsa',linewidth=3.0);
@@ -206,4 +205,3 @@ radius = ones(length(barrier_x),1)*params.barrier_radius;
 viscircles([barrier_x',barrier_y'], radius);
 xlabel('X Position');
 ylabel('Y Position');
-ze

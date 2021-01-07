@@ -17,7 +17,8 @@ classdef  ScaledGP
 			obj.ymean = zeros(1,ydim);
 			obj.xstd = ones(1,xdim);
 			obj.xmean = zeros(1,xdim);
-			obj.m = fitrgp(zeros(1,xdim),zeros(1,ydim));
+			% obj.m = [fitrgp(zeros(1,xdim),zeros(1,ydim));
+			obj.m = {fitrgp(zeros(1,xdim),zeros(1,1)),fitrgp(zeros(1,xdim),zeros(1,1))};
 		end
 		
 		function obj = optimize(obj,x,y)
@@ -28,7 +29,8 @@ classdef  ScaledGP
 			x = obj.scalex(x,xmean,xstd);
 			y = obj.scaley(y,ymean,ystd);
 			
-			obj.m = fitrgp(x,y,'Optimizer','lbfgs');
+			% obj.m = fitrgp(x,y(:,1),'Optimizer','lbfgs')
+			obj.m = {fitrgp(x,y(:,1),'Optimizer','lbfgs'),fitrgp(x,y(:,2),'Optimizer','lbfgs')};
 			
 			obj.xmean = xmean;
 			obj.xstd = xstd;
@@ -39,16 +41,20 @@ classdef  ScaledGP
 				
 		function [mean,var] = predict(obj,x)
 			x = obj.scalex(x,obj.xmean,obj.xstd);
-			[mean,var] = predict(obj.m,x);
+			% [mean,var] = predict(obj.m,x);
+			[mean1,var1] = predict(obj.m{1},x);
+			[mean2,var2] = predict(obj.m{2},x);
+			mean = [mean1,mean2];
+			var = [var1,var2];
 			mean = obj.unscaley(mean,obj.ymean,obj.ystd);
-			var = var * obj.ystd;
+			var = var .* obj.ystd;
 			% if mean.size == 1:
 				% mean = mean[0,0]
 				% var = var[0,0]
 		end
 
 		function [xmean,xstd] = update_xscale(obj,x)
-			xmean = mean(x)
+			xmean = mean(x);
 			xstd = std(x);
 		end
 
@@ -61,7 +67,7 @@ classdef  ScaledGP
 			if any((xstd == 0))
 				result = x-xmean;
 			else
-				result = (x - xmean) / xstd;
+				result = (x - xmean) ./ xstd;
 			end
 		end
 		
@@ -69,7 +75,7 @@ classdef  ScaledGP
 			if any((ystd == 0))
 				result = y-ymean;
 			else
-				result = (y - ymean) / ystd;
+				result = (y - ymean) ./ ystd;
 			end
 		end
 		
@@ -77,7 +83,7 @@ classdef  ScaledGP
 			if any((xstd == 0))
 				result = x + xmean;
 			else
-				result = x * xstd + xmean;
+				result = x .* xstd + xmean;
 			end
 		end
 		
@@ -85,7 +91,7 @@ classdef  ScaledGP
 			if any((ystd == 0))
 				result = y + ymean;
 			else
-				result = y * ystd + ymean;
+				result = y .* ystd + ymean;
 			end
 		end
 

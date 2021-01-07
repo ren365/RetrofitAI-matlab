@@ -79,7 +79,7 @@ classdef AdaptiveClbf
 			obj.mu_prev = zeros(obj.xdim,1);
 			obj.u_prev = zeros(obj.udim,1);
 			obj.u_prev_prev = zeros(obj.udim,1);
-			obj.obs_prev = zeros(obj.odim,1);
+			obj.obs_prev = zeros(obj.odim+1,1);
 			obj.dt = 0.1;
 			obj.max_error = 1.0;
 			
@@ -103,7 +103,7 @@ classdef AdaptiveClbf
 			obj.clf_epsilon = 100;
 			
 			obj.A = NaN;
-			obj.obs = NaN;
+			obj.obs = zeros(obj.odim+1,1);
 			
 			obj.mu_qp = NaN;
 			obj.mu_new = NaN;
@@ -244,7 +244,7 @@ classdef AdaptiveClbf
 			% # if check_model and obj.model.model_trained:
 			if check_model && obj.model_trained
 				% # check how the model is doing.  compare the model's prediction with the actual sampled data.
-				predict_service_success = False;
+				predict_service_success = false;
 				result = NaN;
 				%%%% USE ROSE - UNTRASLATE
 					req = {};
@@ -277,11 +277,10 @@ classdef AdaptiveClbf
 					mDelta = [result.y_out]';
 					sigDelta = [result.var]';
 
-					% # log error if true system model is available
-					if ~isnan(obj.true_dyn)
-						trueDelta = obj.true_dyn.f(obj.z) - obj.dyn.f(obj.z);
-						obj.true_predict_error = norm((trueDelta - mDelta),'fro');
-					end
+					% log error if true system model is available
+					trueDelta = obj.true_dyn.f(obj.z) - obj.dyn.f(obj.z);
+					obj.true_predict_error = norm((trueDelta - mDelta),'fro');
+
 					rho(1) = obj.measurement_noise / (obj.measurement_noise + norm(sigDelta,'fro') + 1e-6);
 					mu_ad = mDelta * rho(1);
 					sigDelta = sigDelta * (1.0 - rho(1));

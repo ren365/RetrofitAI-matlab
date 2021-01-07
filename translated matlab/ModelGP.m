@@ -25,8 +25,8 @@ classdef  ModelGP
 			end
 			model_ydim=obj.xdim/2;
 			obj.m = ScaledGP(model_xdim,model_ydim);
-			obj.y = zeros(0,model_ydim);
-			obj.z = zeros(0,model_xdim);
+			obj.y = [];
+			obj.z = [];
 			obj.N_data = 400;
 
 			obj.model_trained = false;
@@ -44,9 +44,9 @@ classdef  ModelGP
 			theta = obs(1);
 			x_body = obj.rotate(x(3:4,:),theta);
 			if obj.use_obs
-				z = [x_body,obs(2:end,:)]';
+				z = [x_body',obs(2:end)]';
 			else
-				z = [x_body]';
+				z = [x_body];
 			end
 			result = z;
 		end
@@ -67,12 +67,12 @@ classdef  ModelGP
 			% theta = arctan2(x[3]*x[4],x[2]*x[4])
 			theta=obs(1);
 			ynew_rotated = obj.rotate(ynew,theta);
-			obj.y = [obj.y,ynew_rotated'];
-			obj.z = [obj.z,Znew];
+			obj.y = [obj.y;ynew_rotated'];
+			obj.z = [obj.z;Znew'];
 			% throw away old samples if too many samples collected.
 			if length(obj.y) > obj.N_data
-				obj.y = obj.y(end-obj.N_data:end,:);
-				obj.z = obj.z(end-obj.N_data:end,:);
+				obj.y = obj.y((end-obj.N_data):end,:);
+				obj.z = obj.z((end-obj.N_data):end,:);
 			end
 			
 		end
