@@ -25,12 +25,12 @@ classdef  ScaledGP
 
 			[xmean,xstd] = obj.update_xscale(x);
 			[ymean,ystd] = obj.update_yscale(y);
-			
+
 			x = obj.scalex(x,xmean,xstd);
 			y = obj.scaley(y,ymean,ystd);
 			
 			% obj.m = fitrgp(x,y(:,1),'Optimizer','lbfgs')
-			obj.m = {fitrgp(x,y(:,1),'Optimizer','lbfgs'),fitrgp(x,y(:,2),'Optimizer','lbfgs')};
+			obj.m = {fitrgp(x,y(:,1)),fitrgp(x,y(:,2))};
 			
 			obj.xmean = xmean;
 			obj.xstd = xstd;
@@ -39,15 +39,16 @@ classdef  ScaledGP
 			
 		end
 				
-		function [mean,var] = predict(obj,x)
-			x = obj.scalex(x,obj.xmean,obj.xstd);
+		function [mean0,var] = predict(obj,x)
+			x = obj.scalex(x',obj.xmean,obj.xstd);
 			% [mean,var] = predict(obj.m,x);
+			
 			[mean1,var1] = predict(obj.m{1},x);
 			[mean2,var2] = predict(obj.m{2},x);
-			mean = [mean1,mean2];
-			var = [var1,var2];
-			mean = obj.unscaley(mean,obj.ymean,obj.ystd);
-			var = var .* obj.ystd;
+			mean0 = [mean1,mean2];
+			var = mean([var1,var2]); % larger than original std value due to Not multi-gp function!
+			mean0 = obj.unscaley(mean0,obj.ymean,obj.ystd);
+			var = var * obj.ystd;
 			% if mean.size == 1:
 				% mean = mean[0,0]
 				% var = var[0,0]

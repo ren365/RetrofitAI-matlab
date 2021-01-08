@@ -164,12 +164,12 @@ classdef AdaptiveClbf
 		
 		function result = saturate(obj,u,ulim)
 			u0=u(1);
-			u0(u0>ulim(1,2))=ulim(1,2);
 			u0(u0<ulim(1,1))=ulim(1,1);
+			u0(u0>ulim(1,2))=ulim(1,2);
 			
 			u1=u(2);
-			u1(u1>ulim(2,2))=ulim(2,2);
 			u1(u1<ulim(2,1))=ulim(2,1);
+			u1(u1>ulim(2,2))=ulim(2,2);
 		
 			result = [u0,u1];
 		end
@@ -276,21 +276,20 @@ classdef AdaptiveClbf
 				if predict_service_success
 					mDelta = [result.y_out]';
 					sigDelta = [result.var]';
-
 					% log error if true system model is available
 					trueDelta = obj.true_dyn.f(obj.z) - obj.dyn.f(obj.z);
 					obj.true_predict_error = norm((trueDelta - mDelta),'fro');
 
 					rho(1) = obj.measurement_noise / (obj.measurement_noise + norm(sigDelta,'fro') + 1e-6);
-					mu_ad = mDelta * rho(1);
-					sigDelta = sigDelta * (1.0 - rho(1));
+					mu_ad = (mDelta * rho(1))';
+					sigDelta = (sigDelta * (1.0 - rho(1)))';
 				end
 			else
 				sigDelta = ones(obj.xdim/2,1);
 			end
-					
+
 			mu_d = mu_rm + mu_pd - mu_ad;
-			
+
 			obj.mu_qp = zeros(obj.xdim/2,1);
 			if use_qp
 				obj.qpsolve = obj.qpsolve.solve(obj.z,obj.z_ref,mu_d,sigDelta);

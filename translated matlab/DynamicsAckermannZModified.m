@@ -19,7 +19,7 @@ classdef  DynamicsAckermannZModified
 		
 		% test successful
 		function result = f(obj,z) 
-			v = sqrt(z(2,:)^2 + z(3,:)^2) * z(4,:);
+			v = sqrt(z(3,:)^2 + z(4,:)^2) * z(5,:);
 			theta = atan2(z(4)*z(5),z(3)*z(5));
 			v_disturbance_body = [tanh(v^2)*obj.disturbance_scale_vel, (0.1+v)*obj.disturbance_scale_vel];
 			v_disturbance_world = [v_disturbance_body(1) * cos(theta) - v_disturbance_body(2) * sin(theta), ...
@@ -32,7 +32,7 @@ classdef  DynamicsAckermannZModified
 			v=(sqrt(z(3,:)^2 + z(4,:)^2)  + obj.epsilon) * z(5,:);
 			result = obj.control_input_scale * [-z(4,:)*v,z(3,:)/v;z(3,:)*v,z(4,:)/v];
 		end
-		
+
 		% test successful
 		function znext = step(obj,z,u,dt) 
 			v=sqrt(z(3,:)^2 + z(4,:)^2);

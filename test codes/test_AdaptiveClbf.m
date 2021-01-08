@@ -60,6 +60,8 @@ adaptive_clbf_ad.true_dyn = true_dyn;
 
 barrier_x = [5,15,25,35,45,55];
 barrier_y = [0,-0.5,0.5,-0.5,0.5,0];
+% barrier_x = [];
+% barrier_y = [];
 adaptive_clbf = adaptive_clbf.update_barrier_locations(barrier_x,barrier_y,params.barrier_radius);
 adaptive_clbf_qp = adaptive_clbf_qp.update_barrier_locations(barrier_x,barrier_y,params.barrier_radius);
 adaptive_clbf_ad = adaptive_clbf_ad.update_barrier_locations(barrier_x,barrier_y,params.barrier_radius);
@@ -132,7 +134,7 @@ for i = 1:N-2
 	
 	% waitbar(i/(N-2),waitBar);
 
-	if i < N-3
+	if i < N-2
 		z_d(:,i+2) = true_dyn.convert_x_to_z(x_d(:,i+2));
 		z_d_dot = (z_d(:,i+2) - z_d(:,i+1))/dt;
 	end
@@ -142,18 +144,20 @@ for i = 1:N-2
 	else
 		add_data = true;
     end
-	% adaptive_clbf = adaptive_clbf.get_control(z(:,i),z_d(:,i+1),z_d_dot,dt,[],true,add_data,true);
-	% u(:,i+1) = adaptive_clbf.controls;
-	% if (i - start_training -1 ) 
-		% adaptive_clbf.model.train();
-		% adaptive_clbf.model_trained = true;
+	adaptive_clbf = adaptive_clbf.get_control(z(:,i),z_d(:,i+1),z_d_dot,dt,[x(3,i),u(:,i)'],true,add_data,true);
+	u(:,i+1) = adaptive_clbf.controls;
+	if mod((i-1 - start_training - 1) , train_interval) == 0 && i > start_training
+		adaptive_clbf.model = adaptive_clbf.model.train();
+		adaptive_clbf.model_trained = true;
+	end
 	% prediction_error(i) = adaptive_clbf.predict_error;
 	% prediction_error_true(i) = adaptive_clbf.true_predict_error;
 	% prediction_var(:,i:i+1) = np.clip(adaptive_clbf.predict_var,0,params.qp_max_var);
-	% trGssGP(i) = adaptive_clbf.qpsolve.trGssGP;
+	
 	adaptive_clbf_ad = adaptive_clbf_ad.get_control(z_ad(:,i),z_d(:,i+1),z_d_dot,dt,[x_ad(3,i),u_ad(:,i)'],true,add_data,false);
 	u_ad(:,i+1) = adaptive_clbf_ad.controls;
-	if mod((i - start_training - 1) , train_interval) == 0 && i > start_training
+
+	if mod((i-1 - start_training - 1) , train_interval) == 0 && i > start_training
 		adaptive_clbf_ad.model = adaptive_clbf_ad.model.train();
 		adaptive_clbf_ad.model_trained = true;
 	end
@@ -163,45 +167,52 @@ for i = 1:N-2
 	
 	adaptive_clbf_qp = adaptive_clbf_qp.get_control(z_qp(:,i),z_d(:,i+1),z_d_dot,dt,[],true,false,true);
 	u_qp(:,i+1) = adaptive_clbf_qp.controls;
-	u_qp(:,i+1)
 	
-	% adaptive_clbf_pd = adaptive_clbf_pd.get_control(z_pd(:,i),z_d(:,i+1),z_d_dot,dt,[],false,false,false);
-	% u_pd(:,i+1) = adaptive_clbf_pd.controls;
+	adaptive_clbf_pd = adaptive_clbf_pd.get_control(z_pd(:,i),z_d(:,i+1),z_d_dot,dt,[],false,false,false);
+	u_pd(:,i+1) = adaptive_clbf_pd.controls;
 
-	% c = u(:,i+1);
+	c = u(:,i+1);
 	c_ad = u_ad(:,i+1);
 	c_qp = u_qp(:,i+1);
-	% c_pd = u_pd(:,i+1);
+	c_pd = u_pd(:,i+1);
 
-	% c(1) = tan(c(1))/params.vehicle_length;
+	c(1) = tan(c(1))/params.vehicle_length;
 	c_ad(1) = tan(c_ad(1))/params.vehicle_length;
 	c_qp(1) = tan(c_qp(1))/params.vehicle_length;
-	% c_pd(1) = tan(c_pd(1))/params.vehicle_length;
+	c_pd(1) = tan(c_pd(1))/params.vehicle_length;
 
-	% z(:,i+1) = true_dyn.step(z(:,i),c,dt);
+	z(:,i+1) = true_dyn.step(z(:,i),c,dt);
 	z_ad(:,i+1) = true_dyn.step(z_ad(:,i),c_ad,dt);
 	z_qp(:,i+1) = true_dyn.step(z_qp(:,i),c_qp,dt);
-	% z_pd(:,i+1) = true_dyn.step(z_pd(:,i),c_pd,dt);
+	z_pd(:,i+1) = true_dyn.step(z_pd(:,i),c_pd,dt);
 
-	% x(:,i+1) = true_dyn.convert_z_to_x(z(:,i+1));
+	x(:,i+1) = true_dyn.convert_z_to_x(z(:,i+1));
 	x_ad(:,i+1) = true_dyn.convert_z_to_x(z_ad(:,i+1));
 	x_qp(:,i+1) = true_dyn.convert_z_to_x(z_qp(:,i+1));
-	% x_pd(:,i+1) = true_dyn.convert_z_to_x(z_pd(:,i+1));
+	x_pd(:,i+1) = true_dyn.convert_z_to_x(z_pd(:,i+1));
 
 	toc % calculate the time;
 
 end
 
-figure
+% figure
 
-plot(x_d(1,:),x_d(2,:),'k-');
+plot(x_d(1,:),x_d(2,:),'k-','LineWidth',2);
 hold on
-plot(x_ad(1,:),x_ad(2,:),'m--');
-plot(x_qp(1,:),x_qp(2,:),'b-');
-% plot(x_pd(0,:),x_pd(1,:),'y:',alpha=0.9,label='pd');
-% plot(x(0,:),x(1,:),'g-',alpha=0.9,label='balsa',linewidth=3.0);
+plot(x_ad(1,:),x_ad(2,:),'m--','LineWidth',2);
+plot(x_qp(1,:),x_qp(2,:),'b-','LineWidth',2);
+plot(x_pd(1,:),x_pd(2,:),'c--','LineWidth',2);
+plot(x(1,:),x(2,:),'g-','LineWidth',3);
 % legend(bbox_to_anchor=(0,1.02,1,0.2), loc="lower center", ncol=5);
 radius = ones(length(barrier_x),1)*params.barrier_radius;
-viscircles([barrier_x',barrier_y'], radius);
+h = viscircles([barrier_x',barrier_y'], radius);
+xd = h.Children(1).XData(1:end-1); %leave out the nan
+yd = h.Chidren(1).YData(1:end-1);
+fill(xd, yd, 'r');
 xlabel('X Position');
 ylabel('Y Position');
+
+% figure
+% plot(u_ad(1,:))
+% hold on 
+% plot(u_ad(2,:))

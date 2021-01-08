@@ -1285,7 +1285,7 @@ class ModelGPService(ModelService):
 		theta = obs[0]
 		x_body = self.rotate(x[2:-1,:],theta)
 		if self.use_obs:
-			Z = np.concatenate((x_body,obs[1:,:])).T
+			Z = np.concatenate((x_body,obs[1:])).T
 		else:
 			Z = np.concatenate((x_body)).T
 
@@ -1743,7 +1743,7 @@ i=0
 z_d[:,i+1:i+2] = true_dyn.convert_x_to_z(x_d[:,i+1:i+2])
 
 bar = Bar(max=N-1)
-for i in range(N-2):
+for i in range(N-2): # 0 -> 
 	bar.next()
 	start = time.time()
 
