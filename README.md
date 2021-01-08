@@ -11,21 +11,21 @@ The original repo: https://github.com/ren365/RetrofitAI
 
 The structure of the codes. The file name remains almost the same as original python files.
 
-| Name                                           | Type   | Decryption                                         | Status                        |
-| ---------------------------------------------- | ------ | -------------------------------------------------- | ----------------------------- |
-| original python                                | folder | original python files                              | done                          |
-| osqp                                           | folder | installed lib for QP solver                        | done                          |
-| test codes                                     | folder | test whether matlab & python codes behave the same | undergoing                    |
-| install_osqp                                   | .m     | automatically install the osqp on matlab           | tested                        |
-| DynamicsAckermannZModified/ DynamicsAckermannZ | .m     | dynamics                                           | tested                        |
-| einsum                                         | .m     | helper function for numpy.einsum                   | tested                        |
-| LyapunovAckermannZ                             | .m     |                                                    | tested                        |
-| QPSolver                                       | .m     | CBF                                                | tested                        |
-| BarrierAckermannPointZ                         | .m     | (cbf.py) update the barriers position              | tested                        |
-| test_adaptive_clbf                             | .m     | main file to run                                   | tested, gaussian doesn't pass |
-| adaptive_clbf                                  | .m     | combine NN and CBF                                 | tested, gaussian doesn't pass |
-| ModelGP                                        | .m     | gaussian instead of NN                             | tested                        |
-| ScaledGP                                       | .m     | gaussian instead of NN                             | tested                        |
-|                                                |        |                                                    |                               |
+| Name                                           | Type   | Decryption                                         | Status                 |
+| ---------------------------------------------- | ------ | -------------------------------------------------- | ---------------------- |
+| original python                                | folder | original python files                              | done                   |
+| osqp                                           | folder | installed lib for QP solver                        | done                   |
+| test codes                                     | folder | test whether matlab & python codes behave the same | done                   |
+| install_osqp                                   | .m     | automatically install the osqp on matlab           | tested                 |
+| DynamicsAckermannZModified/ DynamicsAckermannZ | .m     | dynamics                                           | tested                 |
+| einsum                                         | .m     | helper function for numpy.einsum                   | tested                 |
+| LyapunovAckermannZ                             | .m     |                                                    | tested                 |
+| QPSolver                                       | .m     | CBF                                                | tested                 |
+| BarrierAckermannPointZ                         | .m     | (cbf.py) update the barriers position              | tested                 |
+| test_adaptive_clbf                             | .m     | main file to run                                   | tested, figure drawing |
+| adaptive_clbf                                  | .m     | combine NN and CBF                                 | tested                 |
+| ModelGP                                        | .m     | gaussian instead of NN                             | tested                 |
+| ScaledGP                                       | .m     | gaussian instead of NN                             | tested                 |
+|                                                |        |                                                    |                        |
 
 
