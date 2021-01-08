@@ -35,19 +35,8 @@ params.verbose = false;
 params.dt = 0.1;
 params.max_error = 10.0;
 
-% # vanilla nn params
 params.qp_ksig = 1.0e2;
 params.measurement_noise = 1.0;
-
-% params.N_data = 600;
-% params.learning_verbose = false;
-% params.N_updates = 50;
-% params.meta_batch_size = 50;
-% params.data_horizon = 20;
-% params.test_horizon = 30;
-% params.learning_rate = 0.001;
-% params.min_datapoints = 50;
-% params.save_data_interval = 10000;
 
 true_dyn = DynamicsAckermannZModified(0.0, -1.0, 1.0);
 
@@ -60,6 +49,8 @@ adaptive_clbf_ad.true_dyn = true_dyn;
 
 barrier_x = [5,15,25,35,45,55];
 barrier_y = [0,-0.5,0.5,-0.5,0.5,0];
+% barrier_x = [];
+% barrier_y = [];
 adaptive_clbf = adaptive_clbf.update_barrier_locations(barrier_x,barrier_y,params.barrier_radius);
 adaptive_clbf_qp = adaptive_clbf_qp.update_barrier_locations(barrier_x,barrier_y,params.barrier_radius);
 adaptive_clbf_ad = adaptive_clbf_ad.update_barrier_locations(barrier_x,barrier_y,params.barrier_radius);
@@ -68,7 +59,7 @@ adaptive_clbf_pd = adaptive_clbf_pd.update_barrier_locations(barrier_x,barrier_y
 x0=[[0.0];[0.0];[0.0];[0.0001]];
 z0 = true_dyn.convert_x_to_z(x0);
 
-T = 40;
+T = 60;
 dt = 0.1;
 N = floor(round(T/dt));
 t = linspace(0,T-2*dt,N-1);
@@ -126,41 +117,45 @@ trGssGP = zeros(1,N);
 i=0;
 z_d(:,i+2) = true_dyn.convert_x_to_z(x_d(:,i+2));
 
-% waitBar = waitbar(0,'Simulating ...');;
+waitBar = waitbar(0,'Simulating ...');
+
 tic;
 for i = 1:N-2
-	% waitbar(i/(N-2),waitBar);
+	
+	waitbar(i/(N-2),waitBar);
 
-	if i < N-3
+	if i < N-2
 		z_d(:,i+2) = true_dyn.convert_x_to_z(x_d(:,i+2));
 		z_d_dot = (z_d(:,i+2) - z_d(:,i+1))/dt;
 	end
 
-	if i == 0
+	if i == 1
 		add_data = false;
 	else
 		add_data = true;
     end
-	adaptive_clbf = adaptive_clbf.get_control(z(:,i),z_d(:,i+1),z_d_dot,dt,[],true,add_data,true);
+	adaptive_clbf = adaptive_clbf.get_control(z(:,i),z_d(:,i+1),z_d_dot,dt,[x(3,i),u(:,i)'],true,add_data,true);
 	u(:,i+1) = adaptive_clbf.controls;
-	% if (i - start_training -1 ) 
-		% adaptive_clbf.model.train();
-		% adaptive_clbf.model_trained = true;
+	if mod((i-1 - start_training - 1) , train_interval) == 0 && i > start_training
+		adaptive_clbf.model = adaptive_clbf.model.train();
+		adaptive_clbf.model_trained = true;
+	end
 	% prediction_error(i) = adaptive_clbf.predict_error;
 	% prediction_error_true(i) = adaptive_clbf.true_predict_error;
 	% prediction_var(:,i:i+1) = np.clip(adaptive_clbf.predict_var,0,params.qp_max_var);
-	% trGssGP(i) = adaptive_clbf.qpsolve.trGssGP;
-
-	adaptive_clbf_ad = adaptive_clbf_ad.get_control(z_ad(:,i),z_d(:,i+1),z_d_dot,dt,[],true,add_data,false);
+	
+	adaptive_clbf_ad = adaptive_clbf_ad.get_control(z_ad(:,i),z_d(:,i+1),z_d_dot,dt,[x_ad(3,i),u_ad(:,i)'],true,add_data,false);
 	u_ad(:,i+1) = adaptive_clbf_ad.controls;
-	% if (i - start_training - 1) % train_interval == 0 and i > start_training:;
-		% adaptive_clbf_ad.model.train();
-		% adaptive_clbf_ad.model_trained = true;
+
+	if mod((i-1 - start_training - 1) , train_interval) == 0 && i > start_training
+		adaptive_clbf_ad.model = adaptive_clbf_ad.model.train();
+		adaptive_clbf_ad.model_trained = true;
+	end
 	% prediction_error_ad(i) = adaptive_clbf_ad.predict_error;
 	% prediction_error_true_ad(i) = adaptive_clbf_ad.true_predict_error;
 	% prediction_var_ad(:,i:i+1) = np.clip(adaptive_clbf_ad.predict_var,0,params.qp_max_var);
-
-	adaptive_clbf_qp = adaptive_clbf_qp.get_control(z_qp(:,i),z_d(:,i+1),z_d_dot,dt,[],true,add_data,true);
+	
+	adaptive_clbf_qp = adaptive_clbf_qp.get_control(z_qp(:,i),z_d(:,i+1),z_d_dot,dt,[],true,false,true);
 	u_qp(:,i+1) = adaptive_clbf_qp.controls;
 	
 	adaptive_clbf_pd = adaptive_clbf_pd.get_control(z_pd(:,i),z_d(:,i+1),z_d_dot,dt,[],false,false,false);
@@ -190,17 +185,17 @@ for i = 1:N-2
 
 end
 
-% fig = plt.figure();
-% plt.rcParams.update({'font.size': 12});
-% plt.plot(x_d(0,:),x_d(1,:),'k-',label='ref');
-% plt.plot(x_ad(0,:),x_ad(1,:),'m--',alpha=0.9,label='ad');
-% plt.plot(x_qp(0,:),x_qp(1,:),'b-',alpha=0.9,label='qp');
-% plt.plot(x_pd(0,:),x_pd(1,:),'y:',alpha=0.9,label='pd');
-% plt.plot(x(0,:),x(1,:),'g-',alpha=0.9,label='balsa',linewidth=3.0);
-% plt.legend(bbox_to_anchor=(0,1.02,1,0.2), loc="lower center", ncol=5);
-% ax = fig.gca();
-% for i in range(barrier_x.size):;
-	% circle = plt.Circle((barrier_x(i),barrier_y(i)), params.barrier_radius, color='r');
-	% ax.add_artist(circle);
-% plt.xlabel('X Position');
-% plt.ylabel('Y Position');
+% figure
+
+plot(x_d(1,:),x_d(2,:),'k-','LineWidth',2);
+hold on
+plot(x_ad(1,:),x_ad(2,:),'m--','LineWidth',2);
+plot(x_qp(1,:),x_qp(2,:),'b-','LineWidth',2);
+plot(x_pd(1,:),x_pd(2,:),'c--','LineWidth',2);
+plot(x(1,:),x(2,:),'g-','LineWidth',3);
+radius = ones(length(barrier_x),1)*params.barrier_radius;
+circles(barrier_x',barrier_y',radius,'facecolor','red','edgecolor','red');
+legend({'reference','only adaptive','only qp','only pd','paper''s method','circles'},...
+		'location','northeastoutside')
+xlabel('X Position');
+ylabel('Y Position');

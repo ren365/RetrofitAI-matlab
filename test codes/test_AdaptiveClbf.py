@@ -1743,7 +1743,7 @@ i=0
 z_d[:,i+1:i+2] = true_dyn.convert_x_to_z(x_d[:,i+1:i+2])
 
 bar = Bar(max=N-1)
-for i in range(N-2): # 0 -> 
+for i in range(N-2): # 0 -> N-3
 	bar.next()
 	start = time.time()
 
@@ -1769,7 +1769,7 @@ for i in range(N-2): # 0 ->
 	# print(z_qp[:,i:i+1],z_d[:,i+1:i+2],z_d_dot)
 	u_qp[:,i+1] = adaptive_clbf_qp.get_control(z_qp[:,i:i+1],z_d[:,i+1:i+2],z_d_dot,dt=dt,obs=[],use_model=False,add_data=False,use_qp=True)
 	# print(u_qp[:,i+1])
-	# u_pd[:,i+1] = adaptive_clbf_pd.get_control(z_pd[:,i:i+1],z_d[:,i+1:i+2],z_d_dot,dt=dt,obs=[],use_model=False,add_data=False,use_qp=False)
+	u_pd[:,i+1] = adaptive_clbf_pd.get_control(z_pd[:,i:i+1],z_d[:,i+1:i+2],z_d_dot,dt=dt,obs=[],use_model=False,add_data=False,use_qp=False)
 
 	# dt = np.random.uniform(0.05,0.15)
 	# c = copy.copy(u[:,i+1:i+2])

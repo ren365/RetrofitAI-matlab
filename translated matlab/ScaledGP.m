@@ -46,12 +46,11 @@ classdef  ScaledGP
 			[mean1,var1] = predict(obj.m{1},x);
 			[mean2,var2] = predict(obj.m{2},x);
 			mean0 = [mean1,mean2];
-			var = mean([var1,var2]); % larger than original std value due to Not multi-gp function!
+			% simplified version for std calculation, due to no multi-gp function in matlab
+			% the origianl value of "var" is between 10^-7 to 10^-11
+			var = var1*var2;
 			mean0 = obj.unscaley(mean0,obj.ymean,obj.ystd);
 			var = var * obj.ystd;
-			% if mean.size == 1:
-				% mean = mean[0,0]
-				% var = var[0,0]
 		end
 
 		function [xmean,xstd] = update_xscale(obj,x)

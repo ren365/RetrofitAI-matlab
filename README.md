@@ -3,29 +3,43 @@ MATLAB version of safe control with supervised learning
 
 requirement: OSQP (MATLAB version)
 
+Running instruction
+
 ```matlab
-install_osqp
+% go to the project path RetrofitAI-matlab
+install_osqp % install the requirement
+addpath("translated matlab")
+run test_adaptive_clbf.m
 ```
 
 The original repo: https://github.com/ren365/RetrofitAI
 
-The structure of the codes. The file name remains almost the same as original python files.
+The structure of the folder.
 
-| Name                                           | Type   | Decryption                                         | Status                 |
-| ---------------------------------------------- | ------ | -------------------------------------------------- | ---------------------- |
-| original python                                | folder | original python files                              | done                   |
-| osqp                                           | folder | installed lib for QP solver                        | done                   |
-| test codes                                     | folder | test whether matlab & python codes behave the same | done                   |
-| install_osqp                                   | .m     | automatically install the osqp on matlab           | tested                 |
-| DynamicsAckermannZModified/ DynamicsAckermannZ | .m     | dynamics                                           | tested                 |
-| einsum                                         | .m     | helper function for numpy.einsum                   | tested                 |
-| LyapunovAckermannZ                             | .m     |                                                    | tested                 |
-| QPSolver                                       | .m     | CBF                                                | tested                 |
-| BarrierAckermannPointZ                         | .m     | (cbf.py) update the barriers position              | tested                 |
-| test_adaptive_clbf                             | .m     | main file to run                                   | tested, figure drawing |
-| adaptive_clbf                                  | .m     | combine NN and CBF                                 | tested                 |
-| ModelGP                                        | .m     | gaussian instead of NN                             | tested                 |
-| ScaledGP                                       | .m     | gaussian instead of NN                             | tested                 |
-|                                                |        |                                                    |                        |
+| Name              | Type   | Description                                               | Status |
+| ----------------- | ------ | --------------------------------------------------------- | ------ |
+| original python   | folder | [test] original python files                              | done   |
+| osqp              | folder | installed lib for QP solver                               | done   |
+| test codes        | folder | [test] test whether matlab & python codes behave the same | done   |
+| translated matlab | folder | [main] matlab files                                       | done   |
+| install_osqp      | .m     | automatically install the osqp on matlab                  | done   |
+|                   |        |                                                           |        |
+
+Inside the "translated matlab" folder, the descriptions of files are shown in the table below.
+
+| Name                       | Type | Description                          |
+| -------------------------- | ---- | ------------------------------------ |
+| test_adaptive_clbf         | .m   | main file to run                     |
+| adaptive_clbf              | .m   | combine GP and CBF                   |
+| QPSolver                   | .m   | CBF                                  |
+| ModelGP                    | .m   | Interface for gaussian process model |
+| ScaledGP                   | .m   | Gaussian process model               |
+| DynamicsAckermannZ         | .m   | Approximate dynamics                 |
+| DynamicsAckermannZModified | .m   | True dynamics                        |
+| BarrierAckermannPointZ     | .m   | barriers class                       |
+| LyapunovAckermannZ         | .m   | CLF                                  |
+| circles                    | .m   | outside helper function              |
+| einsum                     | .m   | outside helper function              |
+|                            |      |                                      |
 
 

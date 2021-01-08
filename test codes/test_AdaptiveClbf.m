@@ -203,16 +203,10 @@ plot(x_ad(1,:),x_ad(2,:),'m--','LineWidth',2);
 plot(x_qp(1,:),x_qp(2,:),'b-','LineWidth',2);
 plot(x_pd(1,:),x_pd(2,:),'c--','LineWidth',2);
 plot(x(1,:),x(2,:),'g-','LineWidth',3);
-% legend(bbox_to_anchor=(0,1.02,1,0.2), loc="lower center", ncol=5);
 radius = ones(length(barrier_x),1)*params.barrier_radius;
-h = viscircles([barrier_x',barrier_y'], radius);
+h = viscircles([barrier_x',barrier_y'], radius, 'color', 'r');
 xd = h.Children(1).XData(1:end-1); %leave out the nan
-yd = h.Chidren(1).YData(1:end-1);
+yd = h.Children(1).YData(1:end-1);
 fill(xd, yd, 'r');
 xlabel('X Position');
 ylabel('Y Position');
-
-% figure
-% plot(u_ad(1,:))
-% hold on 
-% plot(u_ad(2,:))
