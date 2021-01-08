@@ -14,6 +14,8 @@ run test_adaptive_clbf.m
 
 The original repo: https://github.com/ren365/RetrofitAI
 
+Reference paper: https://arxiv.org/abs/1910.02325 
+
 The structure of the folder.
 
 | Name              | Type   | Description                                               | Status |
