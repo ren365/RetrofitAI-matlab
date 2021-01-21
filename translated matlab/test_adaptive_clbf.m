@@ -199,3 +199,22 @@ legend({'reference','only adaptive','only qp','only pd','paper''s method','circl
 		'location','northeastoutside')
 xlabel('X Position');
 ylabel('Y Position');
+
+
+figure
+subplot(2,1,1)
+plot(t,u(1,1:end-1),'b-')
+hold on
+plot([t(1),t(end)],[params.steering_limit,params.steering_limit],'r--')
+plot([t(1),t(end)],[-params.steering_limit,-params.steering_limit],'r--')
+axis([t(1),t(end),-params.steering_limit-0.5,params.steering_limit+0.5]);
+ylabel('Steering Angle (rad)')
+subplot(2,1,2)
+plot(t,u(2,1:end-1),'b-')
+hold on
+plot([t(1),t(end)],[params.min_accel,params.min_accel],'r--')
+plot([t(1),t(end)],[params.max_accel,params.max_accel],'r--')
+axis([t(1),t(end),params.min_accel-0.5,params.max_accel+0.5]);
+ylabel('Throttle (m/s^2)')
+xlabel('Time (s)')
+

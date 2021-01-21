@@ -136,14 +136,19 @@ classdef QPSolve
 			l = double(ones(size(h)))*Inf * -1;
 
 			% #Solve QP
+			% settings: https://osqp.org/docs/interfaces/solver_settings.html#solver-settings
 			obj.prob = osqp;
 			settings = obj.prob.default_settings();
 			settings.verbose = false;
+			settings.max_iter = 100000;
 
 			mu_bar = double(zeros(obj.xdim+1));
-			% obj.prob.setup(P=obj.Q, q=obj.p, A=obj.G_csc, l=l, u=obj.h, verbose=obj.verbose)
 			obj.prob.setup(obj.Q, obj.p, obj.G_csc, l, obj.h, settings);
 			obj.res = obj.prob.solve();
+			if obj.res.info.status_val ~= 1
+				% error codes (https://osqp.org/docs/interfaces/status_values.html#status-values)
+				obj.res.info.status_val
+			end
 			mu_bar = obj.res.x;
 			if any(isnan(mu_bar))
 				mu_bar = zeros(obj.xdim+1);
