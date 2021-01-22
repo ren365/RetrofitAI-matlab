@@ -1,3 +1,7 @@
+---
+typora-root-url: ./
+---
+
 #### Testing Files
 
 **GIF explanation**: the first 4m shows the true dynamics is different from the dynamics and the model learns the error after 4m.
@@ -20,3 +24,28 @@
 | movingTest4 | unsafe | use predicted position to put into cbf                       |
 |             |        |                                                              |
 
+**movingTest1**
+
+![](/movingTest1-move.gif)
+![](movingTest1-control.png)
+
+![](movingTest1-distance.png)
+
+**movingTest2**
+
+![](/movingTest2-move.gif)
+
+![](movingTest2-control.png)
+![](movingTest2-distance.png)
+
+**movingTest3**
+
+![](/movingTest3-move.gif)
+![](movingTest3-control.png)
+![](movingTest3-distance.png)
+
+**movingTest4**
+
+![](/movingTest4-move.gif)
+![](movingTest4-control.png)
+![](movingTest4-distance.png)
