@@ -69,7 +69,7 @@ classdef AdaptiveClbf
 			obj.qpsolve = QPSolve(obj.dyn,[],obj.clf,obj.u_lim,0.0,1.0,1.0e8,1.0e8,false);
 			
 			x_init = zeros(obj.xdim,1);
-			x_init(4) = 0.01;
+			x_init(4) = 0.0001;
 			obj.z_ref = obj.dyn.convert_x_to_z(x_init);
 			obj.z = obj.z_ref;
 			obj.z_ref_dot = zeros(obj.xdim,1);
