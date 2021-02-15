@@ -16,14 +16,14 @@ The original repo: https://github.com/ren365/RetrofitAI
 
 The structure of the folder.
 
-| Name              | Type   | Description                                               | Status |
-| ----------------- | ------ | --------------------------------------------------------- | ------ |
-| original python   | folder | [test] original python files                              | done   |
-| osqp              | folder | installed lib for QP solver                               | done   |
-| test codes        | folder | [test] test whether matlab & python codes behave the same | done   |
-| translated matlab | folder | [main] matlab files                                       | done   |
-| install_osqp      | .m     | automatically install the osqp on matlab                  | done   |
-|                   |        |                                                           |        |
+| Name                   | Type   | Description                                               | Status |
+| ---------------------- | ------ | --------------------------------------------------------- | ------ |
+| others/original python | folder | [test] original python files                              | done   |
+| osqp                   | folder | installed lib for QP solver                               | done   |
+| others/test codes      | folder | [test] test whether matlab & python codes behave the same | done   |
+| main                   | folder | [main] matlab files                                       | done   |
+| install_osqp           | .m     | automatically install the osqp on matlab                  | done   |
+|                        |        |                                                           |        |
 
 Inside the "translated matlab" folder, the descriptions of files are shown in the table below.
 
