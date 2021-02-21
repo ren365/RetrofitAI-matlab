@@ -1,19 +1,19 @@
 clear
 
 % Barriers
-barrier_x = [5,15,25,35,45,55];
-barrier_y = [0,-0.5,0.5,-0.5,0.5,0];
+barrier_x = [10,10,10,10]; % feel free to change the barrier location
+barrier_y = [3,1,-1,-3];   % if needed
 
 % Time 
-T = 60;
+T = 30;
 dt = 0.1;
 N = floor(round(T/dt));
 t = linspace(0,T-2*dt,N-1);
 
 % settings updates
 odim = 2;
-xdim=4;
-udim=2;
+xdim = 4;
+udim = 2;
 params = System_settings();
 
 adaptive_clbf = AdaptiveClbf(odim);
@@ -22,20 +22,31 @@ adaptive_clbf = adaptive_clbf.update_params(params);
 adaptive_clbf.true_dyn = true_dyn;
 adaptive_clbf = adaptive_clbf.update_barrier_locations(barrier_x,barrier_y,params.barrier_radius);
 
+
+useFSM = false; % change this line to true to test your FSM function
+if useFSM
+	% FSM
+	start_position = [0,0];
+	end_position = [10,0];
+	map = Nan;% create your own map based on Barriers
+	x_d = FSM(start_position,end_position,barrier_x,barrier_y);
+	% end FSM
+else
+	% original settings for reference
+	width = 1.0;
+	speed = 1.0;
+	freq = 1.0/10;
+
+	x_d = [t * speed; width * sin(2 * pi * t * freq);zeros(1,N-1); zeros(1,N-1)];
+	x_d(3,1:end-1) = atan2(diff(x_d(2,:)),diff(x_d(1,:)));
+	x_d(4,1:end-1) = sqrt(diff(x_d(1,:)).^2 + diff(x_d(2,:)).^2)/dt;
+	x_d(3,end)=x_d(3,end-1);
+	x_d(4,end)=x_d(4,end-1);
+end
+
 % location & Path & other paras
 x0=[[0.0];[0.0];[0.0];[0.0001]];
 z0 = true_dyn.convert_x_to_z(x0);
-
-width = 1.0;
-speed = 1.0;
-freq = 1.0/10;
-
-x_d = [t * speed; width * sin(2 * pi * t * freq);zeros(1,N-1); zeros(1,N-1)];
-x_d(3,1:end-1) = atan2(diff(x_d(2,:)),diff(x_d(1,:)));
-x_d(4,1:end-1) = sqrt(diff(x_d(1,:)).^2 + diff(x_d(2,:)).^2)/dt;
-x_d(3,end)=x_d(3,end-1);
-x_d(4,end)=x_d(4,end-1);
-
 u = zeros(udim,N);
 x = zeros(xdim,N-1);
 x(:,1) = x0;
@@ -96,7 +107,7 @@ hold on
 plot(x(1,:),x(2,:),'g-','LineWidth',3);
 radius = ones(length(barrier_x),1)*params.barrier_radius;
 circles(barrier_x',barrier_y',radius,'facecolor','red','edgecolor','red');
-legend({'reference','only adaptive','only qp','only pd','paper''s method','circles'},...
+legend({'reference','only adaptive','circles'},...
 		'location','northeastoutside')
 xlabel('X Position');
 ylabel('Y Position');

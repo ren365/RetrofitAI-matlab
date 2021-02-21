@@ -1,4 +1,4 @@
-function result = System_settings()
+function params = System_settings()
 	% para settings
 	% feel free to modify the system
 	params={};
@@ -33,7 +33,7 @@ function result = System_settings()
 	params.qp_ksig = 1.0e2;
 	params.measurement_noise = 1.0;
 	
-	params.train_interval = 40;
-	params.start_training = 100;
+	params.train_interval = 20;
+	params.start_training = 40;
 
 end
