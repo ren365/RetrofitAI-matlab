@@ -50,6 +50,7 @@ classdef AdaptiveClbf
 		
 		A
 		obs
+		N_data
 	end
 	methods (Access = public)
 	
@@ -57,13 +58,14 @@ classdef AdaptiveClbf
 			obj.xdim = 4;
 			obj.udim = 2;
 			obj.odim = odim;
+			obj.N_data = 400;
 			obj.u_lim = [-2.0,2.0;-1.0,1.0];
 			obj.K = [zeros(2), zeros(2);eye(2), eye(2)];
 			obj.dyn = DynamicsAckermannZ();
 			obj.model_trained = false;
 			%%%% USE ROSE - UNTRASLATE
 				% from model_service import ModelVanillaService
-				obj.model = ModelGP(obj.xdim,obj.udim,obj.odim,true);
+				obj.model = ModelGP(obj.xdim,obj.udim,obj.odim,true,obj.N_data);
 			%%%% USE ROSE - UNTRASLATE - END
 			obj.clf = LyapunovAckermannZ(10.0,1.0,1.0,1.0);
 			obj.qpsolve = QPSolve(obj.dyn,[],obj.clf,obj.u_lim,0.0,1.0,1.0e8,1.0e8,false);

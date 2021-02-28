@@ -2,7 +2,7 @@ clear
 
 % Barriers
 barrier_x = [5,15,25,35];
-barrier_y = [0,-0.5,0.5,-0];
+barrier_y = [0,-0.5,0.5,0];
 
 % Time 
 T = 40;

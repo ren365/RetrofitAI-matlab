@@ -13,7 +13,7 @@ classdef  ModelGP
 		model_trained
 	end
 	methods (Access = public)
-		function obj = ModelGP(xdim,udim,odim,use_obs)
+		function obj = ModelGP(xdim,udim,odim,use_obs,N_data)
 			% # note:  use use_obs and observations with caution.  model may overfit to this input.
 			obj.xdim=xdim;%4
 			obj.udim=udim;
@@ -27,7 +27,7 @@ classdef  ModelGP
 			obj.m = ScaledGP(model_xdim,model_ydim);
 			obj.y = [];
 			obj.z = [];
-			obj.N_data = 400;
+			obj.N_data = N_data;
 
 			obj.model_trained = false;
 		
