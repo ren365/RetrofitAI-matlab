@@ -5,7 +5,7 @@ adja = find_adjacent(X, 2, 2, false);
 graph = [1,1,1,1; 1,0,1,0; 1,1,1,1; 1,1,1,1];
 
 tic
-all_path = bfs_search(graph, [1,1], [3,1])
+all_path = bfs_search(graph, [1,1], [4,4])
 disp("excute time for the bfs search is: ")
 toc
 for path = all_path
