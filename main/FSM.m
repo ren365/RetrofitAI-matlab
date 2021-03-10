@@ -1,4 +1,4 @@
-function x_d = FSM(start_position,end_position,barrier_x,barrier_y,dt)
+function x_d = FSM(start_position,end_position,barrier_x,barrier_y,barrier_radius,dt)
 	% What is FSM programming
 	% For example, if there is two status 1 and 2, the input can be 1 or 2.
 	% If we are in status 1 and now the input is 1, then status change to 2 and output 1.
@@ -26,24 +26,13 @@ function x_d = FSM(start_position,end_position,barrier_x,barrier_y,dt)
 	% what you need to do
 	
 	% step 1: generate proper map by the location of barriers and start/end point
-	% not too large or small!
-    offset = min(barrier_y);
-    barrier_y_all_positive = barrier_y;
-    if offset < 0
-        offset = offset * (-1);
-        for i = 1:length(barrier_y)
-            barrier_y_all_positive(i) = barrier_y + offset;
-        end
-    else
-        offset = 0;
-    end
-            
+	% not too large or small!     
     row_count = max(range(barrier_y)+1, start_position(1), end_position(1));
     col_count = max(range(barrier_x)+1, start_position(1), end_position(1));
     matrix = ones(row_count, col_count)
-    for i = 1:length(barrier_x)
-        matrix(barrier_y_all_positive(i), barrier_x(i)) = 0;
-    end
+    
+    matrix = set_barrier(matrix, barrier_x, barrier_y, barrier_radius)
+
 	% step 2: build your own FSM to run logicly, the only things is that 
 	% avoid barriers and reach the end!
     path = bfs_search(matrix, start_position, end_position);
@@ -64,5 +53,48 @@ function x_d = FSM(start_position,end_position,barrier_x,barrier_y,dt)
     
 	% step 4: After simulating the above FSM, we have a reference path now.
 	% add direction "theta" and velocity to fill up the x_d!
-	todo = Nan;
+    
+    % original settings for reference
+	width = 1.0;
+	speed = 1.0;
+	freq = 1.0/10;
+
+	x_d = [t * speed; width * sin(2 * pi * t * freq);zeros(1,N-1); zeros(1,N-1)];
+	x_d(3,1:end-1) = atan2(diff(x_d(2,:)),diff(x_d(1,:)));
+	x_d(4,1:end-1) = sqrt(diff(x_d(1,:)).^2 + diff(x_d(2,:)).^2)/dt;
+	x_d(3,end)=x_d(3,end-1);
+	x_d(4,end)=x_d(4,end-1);
+
+end
+
+% credit: function to draw circle in the matrix
+% https://matlab.fandom.com/wiki/FAQ#How_do_I_create_a_circle.3F
+function graph = set_barrier(matrix, barrier_x, barrier_y, barrier_radius)
+    offset = min(barrier_y);
+    barrier_y_all_positive = barrier_y;
+    if offset < 0
+        offset = offset * (-1);
+        for i = 1:length(barrier_y)
+            barrier_y_all_positive(i) = barrier_y + offset;
+        end
+    else
+        offset = 0;
+    end
+    col_size = size(matrix,2);
+    row_size = size(matrix,1);
+    radius = barrier_radius;
+    [columnsInImage rowsInImage] = meshgrid(1:col_size, 1:row_size);
+
+    graph = zeros(sizeof(matrix));
+    for i = 1:length(barrier_x)
+        centerX = barrier_x(i);
+        centerY = barrier_y_all_positive(i);
+        graph = graph | ((rowsInImage - centerY).^2 ...
+            + (columnsInImage - centerX).^2 <= radius.^2);
+    end
+    % negate the graph, since in the search algorithm, 1 can go, 0 cannot
+    % however, before the following step, anywhere belongs to barrier
+    % is marked as 1.
+    graph = ~graph;
+
 end
