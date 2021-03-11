@@ -20,13 +20,13 @@ adaptive_clbf = AdaptiveClbf(odim);
 true_dyn = DynamicsAckermannZModified(0.0, -1.0, 1.0);
 adaptive_clbf = adaptive_clbf.update_params(params);
 adaptive_clbf.true_dyn = true_dyn;
-adaptive_clbf = adaptive_clbf.update_barrier_locations(barrier_x,barrier_y,params.barrier_radius);
+adaptive_clbf = adaptive_clbf.update_barrier_locations(barrier_x,barrier_y,params.barrier_radius, N-1);
 
 
 useFSM = false; % change this line to true to test your FSM function
 if useFSM
 	% FSM
-	start_position = [0,0];
+	start_position = [0,0];`
 	end_position = [10,0];
 	map = Nan;% create your own map based on Barriers
 	x_d = FSM(start_position,end_position,barrier_x,barrier_y,params.barrier_radius,dt);

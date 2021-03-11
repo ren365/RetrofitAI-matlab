@@ -1,4 +1,4 @@
-function x_d = FSM(start_position,end_position,barrier_x,barrier_y,barrier_radius,dt)
+function x_d = FSM(start_position,end_position,barrier_x,barrier_y,barrier_radius,dt, N)
 	% What is FSM programming
 	% For example, if there is two status 1 and 2, the input can be 1 or 2.
 	% If we are in status 1 and now the input is 1, then status change to 2 and output 1.
@@ -58,8 +58,10 @@ function x_d = FSM(start_position,end_position,barrier_x,barrier_y,barrier_radiu
 	width = 1.0;
 	speed = 1.0;
 	freq = 1.0/10;
-
-	x_d = [t * speed; width * sin(2 * pi * t * freq);zeros(1,N-1); zeros(1,N-1)];
+    
+    [pathX pathY] = find_referenceXY(x_pos, y_pos, dt, radius,x,N);
+    
+	x_d = [pathX; pathY;zeros(1,N-1); zeros(1,N-1)];
 	x_d(3,1:end-1) = atan2(diff(x_d(2,:)),diff(x_d(1,:)));
 	x_d(4,1:end-1) = sqrt(diff(x_d(1,:)).^2 + diff(x_d(2,:)).^2)/dt;
 	x_d(3,end)=x_d(3,end-1);
@@ -96,5 +98,88 @@ function graph = set_barrier(matrix, barrier_x, barrier_y, barrier_radius)
     % however, before the following step, anywhere belongs to barrier
     % is marked as 1.
     graph = ~graph;
-
 end
+
+% credit of how to draw the circle path in matrix
+% https://www.mathworks.com/matlabcentral/answers/568719-how-to-plot-a-quarter-of-a-circle
+function [pathX, pathY] find_referenceXY(x_pos, y_pos, dt, radius,x, N)
+    speed = 1;
+    pathX = ones(1,N) * x_pos(end);
+    pathY = ones(1,N) * y_pos(end);
+    
+    point_count = 0;
+    for i=1:size(x_pos,2)-1
+        % point is include the right/next step, but not the beginning
+        if (y_pos(i+1) - y_pos(i) == 0)
+            left = min(x_pos(i+1),x_pos(i));
+            right = max(x_pos(i+1),x_pos(i));
+            dist = right - left;
+            point_num = floor(dist/(v*dt));
+            
+            for p =point_count+1:point_count+point_num
+                temp = p-point_count+1;
+                pathX(p) = (left+temp*dt);
+                pathY(p) = y_pos(i);
+            end
+            point_count = point_count + point_num;
+        elseif (x_pos(i+1) - x_pos(i) == 0)
+            up = max(y_pos(i+1), y_pos(i));
+            down = min(y_pos(i+1), y_pos(i));
+            dist = down - up;
+            point_num = floor(dist/(v*dt));
+            
+            for p=point_count+1:point_count+point_num
+                temp = p-point_count+1;
+                pathX(p) = x_pos(i);
+                pathY(p) = (down+temp*dt);
+            end
+            point_count = point_count + point_num;
+        elseif (abs(x_pos(i+1)-x_pos(i))==radius & abs(y_pos(i+1)-y_pos(i))==radius)
+            dist = (pi*radius)/2;
+            point_num = floor(dist/(v*dt));
+            iteration_interval = 90/(point_num-1);
+            if (x_pos(i+1)>x_pos(i)&y_pos(i+1)>y_pos(i))
+                % Center
+                C = [x_pos(i+1),y_pos(i)];
+                % angle 
+                th = -90:iteration_interval:0;
+            elseif (x_pos(i+1)>x_pos(i)&y_pos(i+1)<y_pos(i))
+                % Center
+                C = [x_pos(i),y_pos(i+1)];
+                % angle 
+                th = 0:iteration_interval:90;
+            elseif (x_pos(i+1)<x_pos(i)&y_pos(i+1)>y_pos(i))
+                % Center
+                C = [x_pos(i+1),y_pos(i)];
+                % angle 
+                th = 90:-iteration_interval:0;
+            elseif (x_pos(i+1)<x_pos(i)&y_pos(i+1)<y_pos(i))
+                % Center
+                C = [x_pos(i),y_pos(i+1)];
+                % angle 
+                th = 0:-iteration_interval:-90;
+            end
+            % points of cricle 
+            xc = C(1)+R*sind(th) ; 
+            yc = C(2)+R*cosd(th) ;
+            for p=1:size(xc,2)
+                index = point_count+p;
+                pathX(index) = xc(p);
+                pathY(index) = yc(p);
+            end
+            point_count = point_count + size(xc,2);
+            
+            if size(xc,2) < size(point_num)
+                diff = size(point_num) - size(xc,2);
+                for d=1:diff
+                    pathX(point_count+d) = x_pos(i+1);
+                    pathY(point_count+d) = y_pos(i+1);
+                end
+                point_count = point_count + diff;
+            end
+        end
+
+    end
+
+   
+    
