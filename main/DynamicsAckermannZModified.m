@@ -18,13 +18,17 @@ classdef  DynamicsAckermannZModified
 		end
 		
 		% test successful
+		% function result = f(obj,z) 
+			% v = sqrt(z(3,:)^2 + z(4,:)^2) * z(5,:);
+			% theta = atan2(z(4)*z(5),z(3)*z(5));
+			% v_disturbance_body = [tanh(v^2)*obj.disturbance_scale_vel, (0.1+v)*obj.disturbance_scale_vel];
+			% v_disturbance_world = [v_disturbance_body(1) * cos(theta) - v_disturbance_body(2) * sin(theta), ...
+								   % v_disturbance_body(1) * sin(theta) + v_disturbance_body(2) * cos(theta)];
+            % result = [v_disturbance_world(1); v_disturbance_world(2)];
+		% end
+		
 		function result = f(obj,z) 
-			v = sqrt(z(3,:)^2 + z(4,:)^2) * z(5,:);
-			theta = atan2(z(4)*z(5),z(3)*z(5));
-			v_disturbance_body = [tanh(v^2)*obj.disturbance_scale_vel, (0.1+v)*obj.disturbance_scale_vel];
-			v_disturbance_world = [v_disturbance_body(1) * cos(theta) - v_disturbance_body(2) * sin(theta), ...
-								   v_disturbance_body(1) * sin(theta) + v_disturbance_body(2) * cos(theta)];
-            result = [v_disturbance_world(1); v_disturbance_world(2)];
+            result = [0; 0]*z(5,:);
 		end
 		
 		% test successful
