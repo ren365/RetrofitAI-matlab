@@ -24,13 +24,13 @@ adaptive_clbf.true_dyn = true_dyn;
 adaptive_clbf = adaptive_clbf.update_barrier_locations(barrier_x,barrier_y,params.barrier_radius);
 
 
-useFSM = false; % change this line to true to test your FSM function
+useFSM = true; % change this line to true to test your FSM function
 if useFSM
 	% FSM
 	start_position = [0,0];
 	end_position = [10,0];
 	%map = Nan;% create your own map based on Barriers
-	x_d = FSM(start_position,end_position,barrier_x,barrier_y);
+	x_d = FSM_Zeyuan(start_position,end_position,barrier_x,barrier_y);
 	% end FSM
 else
 	% original settings for reference
