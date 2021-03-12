@@ -30,7 +30,7 @@ if useFSM
 	start_position = [0,0];
 	end_position = [10,0];
 	%map = Nan;% create your own map based on Barriers
-	x_d = FSM_Zeyuan(start_position,end_position,barrier_x,barrier_y);
+	x_d = FSM_Zeyuan_method2(start_position,end_position,barrier_x,barrier_y);
 	% end FSM
 else
 	% original settings for reference
