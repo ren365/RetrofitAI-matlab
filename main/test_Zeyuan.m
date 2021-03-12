@@ -1,13 +1,14 @@
 clear
 
 % Barriers
-barrier_x = [10,10,10,10]; % feel free to change the barrier location
-barrier_y = [3,1,-1,-3];   % if needed
+barrier_x = [3, 3, 3, 5];
+barrier_y = [5, 0, -5, 3];
 
 % Time 
 T = 30;
 dt = 0.1;
-N = floor(round(T/dt));
+%N = floor(round(T/dt));
+N = 101;
 t = linspace(0,T-2*dt,N-1);
 
 % settings updates
@@ -28,7 +29,7 @@ if useFSM
 	% FSM
 	start_position = [0,0];
 	end_position = [10,0];
-	map = Nan;% create your own map based on Barriers
+	%map = Nan;% create your own map based on Barriers
 	x_d = FSM(start_position,end_position,barrier_x,barrier_y);
 	% end FSM
 else
