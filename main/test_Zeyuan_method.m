@@ -85,12 +85,6 @@ for i = 1:N-2
 	adaptive_clbf = adaptive_clbf.get_control(z(:,i),z_d(:,i+1),z_d_dot,dt,[x(3,i),u(:,i)'],true,add_data,true);
 	u(:,i+1) = adaptive_clbf.controls;
 	
-	% train the adaptation model
-	if mod((i-1 - params.start_training - 1) , params.train_interval) == 0 && i > params.start_training
-		adaptive_clbf.model = adaptive_clbf.model.train();
-		adaptive_clbf.model_trained = true;
-	end
-
 	% went over a step
 	c = u(:,i+1);
 	c(1) = tan(c(1))/params.vehicle_length;

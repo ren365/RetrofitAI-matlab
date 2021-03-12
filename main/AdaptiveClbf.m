@@ -241,54 +241,9 @@ classdef AdaptiveClbf
 			
 			obj.z_dot = (obj.z(3:end-1,:)-obj.z_prev(3:end-1,:))/dt - mu_model;
 			
-			% # if check_model and obj.model.model_trained:
-			if check_model && obj.model_trained
-				% # check how the model is doing.  compare the model's prediction with the actual sampled data.
-				predict_service_success = false;
-				result = NaN;
-				%%%% USE ROSE - UNTRASLATE
-					req = {};
-					req.x = obj.z_prev;
-					req.obs = obj.obs_prev;
-					result = obj.model.predict(req);
-					predict_service_success = true;
-				%%%% USE ROSE - UNTRASLATE - END
+			sigDelta = ones(obj.xdim/2,1);
 
-				if predict_service_success
-					obj.y_out = [result.y_out]';
-					obj.predict_var = [result.var]';
-					obj.predict_error = norm((obj.y_out - obj.z_dot),'fro');
-				end
-			end
-			
-			if use_model && obj.model_trained
-				predict_service_success = false;
-				result = NaN;
-				%%%% USE ROSE - UNTRASLATE
-					req = {};
-					req.x = obj.z;
-					req.obs = obj.obs;
-					result = obj.model.predict(req);
-					predict_service_success = true;
-				%%%% USE ROSE - UNTRASLATE - END
-
-
-				if predict_service_success
-					mDelta = [result.y_out]';
-					sigDelta = [result.var]';
-					% log error if true system model is available
-					trueDelta = obj.true_dyn.f(obj.z) - obj.dyn.f(obj.z);
-					obj.true_predict_error = norm((trueDelta - mDelta),'fro');
-
-					rho(1) = obj.measurement_noise / (obj.measurement_noise + norm(sigDelta,'fro') + 1e-6);
-					mu_ad = (mDelta * rho(1))';
-					sigDelta = (sigDelta * (1.0 - rho(1)))';
-				end
-			else
-				sigDelta = ones(obj.xdim/2,1);
-			end
-
-			mu_d = mu_rm + mu_pd - mu_ad;
+			mu_d = mu_rm + mu_pd;
 
 			obj.mu_qp = zeros(obj.xdim/2,1);
 			if use_qp
