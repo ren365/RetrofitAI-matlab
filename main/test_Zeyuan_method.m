@@ -1,8 +1,13 @@
 clear
+% start and end position
+start_position = [0,0]; %[x,y]
+end_position = [10,0];
 
 % Barriers
 barrier_x = [3, 3, 3, 5];
 barrier_y = [5, 0, -5, 3];
+barrier_vx = [0.1,0,-0.1,0];
+barrier_vy = [0,0.1,0,-0.1];
 
 % Time 
 T = 30;
@@ -25,25 +30,12 @@ adaptive_clbf = adaptive_clbf.update_barrier_locations(barrier_x,barrier_y,param
 
 
 useFSM = true; % change this line to true to test your FSM function
-if useFSM
-	% FSM
-	start_position = [0,0];
-	end_position = [10,0];
-	%map = Nan;% create your own map based on Barriers
-	x_d = FSM_Zeyuan_method2(start_position,end_position,barrier_x,barrier_y);
-	% end FSM
-else
-	% original settings for reference
-	width = 1.0;
-	speed = 1.0;
-	freq = 1.0/10;
-
-	x_d = [t * speed; width * sin(2 * pi * t * freq);zeros(1,N-1); zeros(1,N-1)];
-	x_d(3,1:end-1) = atan2(diff(x_d(2,:)),diff(x_d(1,:)));
-	x_d(4,1:end-1) = sqrt(diff(x_d(1,:)).^2 + diff(x_d(2,:)).^2)/dt;
-	x_d(3,end)=x_d(3,end-1);
-	x_d(4,end)=x_d(4,end-1);
-end
+% original settings for reference
+width = 1.0; speed = 1.0; freq = 1.0/10;
+x_d = [t * speed; width * sin(2 * pi * t * freq);zeros(1,N-1); zeros(1,N-1)];
+x_d(3,1:end-1) = atan2(diff(x_d(2,:)),diff(x_d(1,:)));
+x_d(4,1:end-1) = sqrt(diff(x_d(1,:)).^2 + diff(x_d(2,:)).^2)/dt;
+x_d(3,end)=x_d(3,end-1); x_d(4,end)=x_d(4,end-1);
 
 % location & Path & other paras
 x0=[[0.0];[0.0];[0.0];[0.0001]];
@@ -68,6 +60,16 @@ tic;
 for i = 1:N-2
 	
 	waitbar(i/(N-2),waitBar);
+	%%%%%%%%%%%%%%%%%%%%%%%%%
+	% adding moving barriers and udpate path every iteration
+	[barrier_x,barrier_y]=moving_barrier(...
+			barrier_x,barrier_y,barrier_vx,barrier_vy,dt);
+	adaptive_clbf = adaptive_clbf.update_barrier_locations(barrier_x,barrier_y,params.					barrier_radius);
+	barrier_x
+	barrier_y
+	x_d = FSM_Zeyuan_method2(start_position,end_position,round(barrier_x),round(barrier_y));
+
+	%%%%%%%%%%%%%%%%%%%%%%%%%
 
 	% corner case
 	if i < N-2
