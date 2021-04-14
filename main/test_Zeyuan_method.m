@@ -3,12 +3,24 @@ clear
 start_position = [0,0]; %[x,y]
 end_position = [10,0];
 
-% Barriers
-barrier_x = [3, 3, 3, 5];
-barrier_y = [5, 0, -5, 3];
-barrier_vx = [0.1,0,-0.1,0];
-barrier_vy = [0,0.1,0,-0.1];
-
+Senario = true;
+if Senario
+    % Barriers
+    % Senario 1: bugs under unlimited run
+    barrier_x = [3, 3, 3, 5];
+    barrier_y = [5, 0, -5, 3];
+    barrier_vx = [0.1,0,-0.1,0];
+    barrier_vy = [0,0.1,0,-0.1];
+else
+    % Barriers
+    % Senario 2: bugs in first run
+    % Senario two other vehicles run together with this vehicle
+    % Two passagers try to cross the line
+    barrier_x = [0, 0, 4, 8];
+    barrier_y = [5, -5, 3, -3];
+    barrier_vx = [0.1,0.1,0,0];
+    barrier_vy = [0,0,-0.1,0.1];
+end
 % Time 
 T = 30;
 dt = 0.1;
