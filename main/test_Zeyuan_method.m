@@ -77,9 +77,10 @@ for i = 1:N-2
 	[barrier_x,barrier_y]=moving_barrier(...
 			barrier_x,barrier_y,barrier_vx,barrier_vy,dt);
 	adaptive_clbf = adaptive_clbf.update_barrier_locations(barrier_x,barrier_y,params.					barrier_radius);
-	barrier_x
-	barrier_y
-	x_d = FSM_Zeyuan_method2(start_position,end_position,round(barrier_x),round(barrier_y));
+	% barrier_x
+	% barrier_y
+	current_position = x(1:2,i-1)'
+	x_d = FSM_Zeyuan_method2(current_position,end_position,round(barrier_x),round(barrier_y));
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%
 
